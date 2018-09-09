@@ -16,11 +16,11 @@ app.controller("inventoryCtrl", ['$scope','$filter','$http','Data','screenSize' 
   Data.get('session').then(function (results) {
     if (results.uid) {
       $scope.sortingOrder = sortingOrder;
-      $scope.pageSizes = [1, 5,10,25,50];
+      $scope.pageSizes = [10,20,30,40,50];
       $scope.reverse = false;
       $scope.filteredItems = [];
       $scope.groupedItems = [];
-      $scope.itemsPerPage = 5;
+      $scope.itemsPerPage = 10;
       $scope.pagedItems = [];
       $scope.currentPage = 0;
       $scope.items = [];
