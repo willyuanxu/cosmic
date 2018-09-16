@@ -56,7 +56,10 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
     var checkoutUserName = $scope.checkout.checkoutUserName;
     var quantity = filterInt($scope.checkout.quantity);
 
-    console.log(returnDate);
+     if($rootScope.type !== 'Admin'){
+      checkoutUserEmail =  $rootScope.email;
+      checkoutUserName = $rootScope.name;
+    }
 
     var tickedItems = [];
      angular.forEach( $scope.hardwareID, function( value, key ) {
