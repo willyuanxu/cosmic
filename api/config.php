@@ -2,9 +2,9 @@
 /**
  * Database configuration
  */
-define('DB_USERNAME', 'melody');
+define('DB_USERNAME', 'root');
 define('DB_HOST', 'localhost');
 define('DB_PASSWORD', 'root');
-define('DB_NAME', 'cosmicsys577t2');
+define('DB_NAME', 'cosmicsys577t3');
 
 ?>
