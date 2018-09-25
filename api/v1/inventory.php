@@ -137,8 +137,9 @@ $app->post('/checkOut', function() use ($app) {
 
     $ids = "";
     for ($x = 0; $x < count($hardwareNotes); $x++) {
-        $sql4 = "UPDATE `HardwareTable` SET `available`=0 WHERE `itemid` = $itemid AND `HardwareID`=".$hardwareNotes[$x] ;
-        $ids=" ".$hardwareNotes[$x];
+        $sql4 = "UPDATE `HardwareTable` SET `available`=0 WHERE `itemid` = $itemid AND `HardwareID`='".$hardwareNotes[$x]."'" ;
+        $ids.=" ".$hardwareNotes[$x];
+
         $db->update($sql4);
     }
     // $results["update"] = $sql4;
@@ -477,6 +478,7 @@ $app->post('/checkIn', function() use ($app) {
 
     $sql = "SELECT * FROM `items_checkedout` WHERE `itemid`=$itemid AND `uid` = $uid AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
     $results["checkedout"] = $db->getOneRecord($sql);
+    echo $sql;
 
     //if user actually has the item checked out
     if($results["checkedout"]){
@@ -494,7 +496,7 @@ $app->post('/checkIn', function() use ($app) {
         $results["updateQuantities"] = $db->update($sql);
         
         for ($x = 0; $x < count($hardwareNotes); $x++) {
-            $sql4 = "UPDATE `HardwareTable` SET `available`=1 WHERE `itemid` = $itemid AND `HardwareID`=".$hardwareNotes[$x] ;
+            $sql4 = "UPDATE `HardwareTable` SET `available`=1 WHERE `itemid` = $itemid AND `HardwareID`='".$hardwareNotes[$x]."'" ;
             $ids=$ids. " ".$hardwareNotes[$x];
             $db->update($sql4);
         }
