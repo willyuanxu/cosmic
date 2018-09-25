@@ -478,7 +478,6 @@ $app->post('/checkIn', function() use ($app) {
 
     $sql = "SELECT * FROM `items_checkedout` WHERE `itemid`=$itemid AND `uid` = $uid AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
     $results["checkedout"] = $db->getOneRecord($sql);
-    echo $sql;
 
     //if user actually has the item checked out
     if($results["checkedout"]){
