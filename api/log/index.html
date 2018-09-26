@@ -20,6 +20,7 @@
       <h2 class="page-header">COSMIC-System Log</h2>
     </div>
   </div>
+  <button type="button" class="width-35 btn btn-sm btn-primary"><a href="../../#checkedout" style="color:white">View Currently Checked Out Items </a></button>
   <div class="row">
     <div class="col-xs-12" ng-controller="demoController as demo">
       <table ng-table="tableParams" class="table table-condensed table-bordered table-striped">
@@ -45,6 +46,11 @@
 <script src='js/nqjzro.js'></script>
 
   <script  src="js/index.js"></script>
+  <script>
+    function getCheckedOut(){
+      window.history.pushState({}, document.title, "/" + "/#/checkedout");
+    }
+  </script>
 
 </body>
 </html>

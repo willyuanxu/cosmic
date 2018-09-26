@@ -2,7 +2,11 @@
 var app = angular.module("myApp", ["ngTable"]);
 
 app.controller('demoController', ['$scope', '$http','NgTableParams', function ($scope, $http, NgTableParams) {
-
+ 
+ $scope.getCheckedOut = function () {
+          console.log(results);
+          $location.path('checkedout');
+  };
   // http get request to read CSV file content
   $http.get("log_data.txt")
     .then(
