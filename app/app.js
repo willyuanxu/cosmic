@@ -5,7 +5,8 @@ var app = angular.module('myApp', [
   'angularFileUpload',
   'matchMedia',
   'tien.clndr',
-  'isteven-multi-select'
+  'isteven-multi-select',
+  'ngTable'
 ]);
 
 app.config(['$routeProvider',
@@ -61,6 +62,11 @@ app.config(['$routeProvider',
                 title: 'About',
                 templateUrl: 'partials/about.html',
                 controller: 'aboutCtrl'
+            })
+            .when('/log', {
+                title: 'Log',
+                templateUrl: 'partials/log.html',
+                controller: 'logCtrl'
             })
             .otherwise({
                 redirectTo: '/login'

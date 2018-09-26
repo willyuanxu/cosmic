@@ -25,6 +25,8 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
       });
   };
 
+  
+
   $scope.getCheckedOut = function () {
     Data.get('session').then(function (results) {
       if (results.uid) {
