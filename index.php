@@ -101,6 +101,7 @@
     <script src="./app/dashboardCtrl.js"></script>
     <script src="./app/removeusersCtrl.js"></script>
     <script src="./app/changepasswordCtrl.js"></script>
+    <script src="./app/checkoutLogCtrl.js"></script>
     <!-- Daterange Picker -->
     <script type="text/javascript" src="http://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="http://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
@@ -111,5 +112,7 @@
 
     <script src="./js/isteven-multi-select.js"></script>
     <link rel="stylesheet" href="./css/isteven-multi-select.css">
+     <link rel="stylesheet"; href="https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.css">
+    <script src="https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.js"></script>
   </body>
 </html>

@@ -40,7 +40,7 @@ $app->post('/getCalendarInfo', function() use ($app) {
 $app->post('/getCheckoutList', function() use ($app) {
     $db = new DbHandler();
     // $sql = "SELECT `itemid` , `name` , `tag1` , `tag2` , `tag3` , `tag4` , `tag5` , `status`, `quantityAvailable` FROM `items`";
-    $sql = "SELECT * FROM items_checkedout";
+    $sql = "SELECT A.itemid, B.name, A.checkout_user, A.checkout_useremail, A.quantity, A.return_date FROM items_checkedout AS A, items AS B WHERE A.itemid = B.itemid";
     $result = $db->getMultRecords($sql);
     $response = $result;
     echoResponse(200, $response);
