@@ -5,7 +5,8 @@ var app = angular.module('myApp', [
   'angularFileUpload',
   'matchMedia',
   'tien.clndr',
-  'isteven-multi-select'
+  'isteven-multi-select',
+  'ngTable'
 ]);
 
 app.config(['$routeProvider',
@@ -61,6 +62,11 @@ app.config(['$routeProvider',
                 title: 'About',
                 templateUrl: 'partials/about.html',
                 controller: 'aboutCtrl'
+            })
+            .when('/checkedout',{
+                title: 'Checked Out Log',
+                templateUrl: 'partials/checkoutLog.html',
+                controller: 'checkoutLogCtrl'
             })
             .otherwise({
                 redirectTo: '/login'

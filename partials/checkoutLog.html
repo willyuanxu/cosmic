@@ -1,0 +1,89 @@
+<div ng-if="type === 'Admin'">
+  <h2>Items Currently Checked Out</h2>
+  <hr />
+  <div class="container-fluid" >
+    <button type="button" class="width-35 btn btn-sm btn-primary"><a href="api/log/" style="color:white">View Log </a></button>
+    <div>
+      <div class="row">
+    <div class="col-xs-12" ng-controller="checkoutLogCtrl as demo">
+      <table ng-table="tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
+        <tr ng-repeat="row in $data">
+          <td data-title="'Item'" filter="{name: 'text'}" sortable="'name'">{{row.name}}</td>
+          <td data-title="'Borrower Name'" filter="{checkout_user: 'text'}" sortable="'checkout_user'">{{row.checkout_user}}</td>
+          <td data-title="'Borrower Email'" filter="{checkout_useremail: 'text'}" sortable="'checkout_useremail'">{{row.checkout_useremail}}</td>
+          <td data-title="'Quantity'" sortable="'quantity'">{{row.quantity}}</td>
+          <td data-title="'Expected Return'" sortable="'return_date'">{{row.return_date}}</td>
+          
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+      <br />
+      <!-- <table class="table table-striped">
+        <tbody>
+          <tr ng-if='desktop'>
+            <th class="adminName">Item</th>
+            <th class="name"><a ng-click="sort_by('name')">Name <i class="fa fa-sort"></i></a></th>
+            <th class="tags" title="non-sortable">Tags</th>
+            <th class="description" title="non-sortable">Status</th>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="9">
+              {{sizes}}
+              <div class="text-center">
+                <ul class="pagination">
+                  <li class="page-item" ng-class="{disabled: currentPage == 0}">
+                    <a class="page-link" href="javascript:;" ng-click="prevPage()">« Prev</a>
+                  </li>
+                  <li class="page-item" ng-repeat="n in range(pagedItems.length)" ng-class="{active: n == currentPage}" ng-click="setPage()">
+                    <a class="page-link" href="javascript:;" ng-bind="n + 1">1</a>
+                  </li>
+                  <li class="page-item" ng-class="{disabled: currentPage == pagedItems.length - 1}">
+                    <a class="page-link" href="javascript:;" ng-click="nextPage()">Next »</a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+        <tbody>
+
+          <tr ng-if='desktop' ng-repeat="item in pagedItems[currentPage] | orderBy:sortingOrder:reverse">
+            <td><a href="#items/{{item.itemid}}"><img src="./images/items/{{item.itemid}}.jpg" class="img-thumbnail inventory-image"></a></td>
+            <td><a href="#items/{{item.itemid}}" class="inventoryLink">{{item.name}}</a></td>
+            <td>
+              <ul>
+                <li ng-if="item.tag1"><a href="" class="tag" ng-click="searchTagsInd(item.tag1)">{{item.tag1}}</a></li>
+                <li ng-if="item.tag2"><a href="" class="tag" ng-click="searchTagsInd(item.tag2)">{{item.tag2}}</a></li>
+                <li ng-if="item.tag3"><a href="" class="tag" ng-click="searchTagsInd(item.tag3)">{{item.tag3}}</a></li>
+                <li ng-if="item.tag4"><a href="" class="tag" ng-click="searchTagsInd(item.tag4)">{{item.tag4}}</a></li>
+                <li ng-if="item.tag5"><a href="" class="tag" ng-click="searchTagsInd(item.tag5)">{{item.tag5}}</a></li>
+              </ul>
+            </td>
+            <td>{{item.status}}<span ng-if="item.status === 'Available'"><br /></span></td>
+          </tr>
+
+          <tr ng-if='!desktop' ng-repeat="item in pagedItems[currentPage] | orderBy:sortingOrder:reverse">
+            <td>
+              <a href="#items/{{item.itemid}}" class="inventoryLink"><img src="./images/items/{{item.itemid}}.jpg" class="img-thumbnail inventory-image-mobile float-left">
+              <strong>{{item.name}}</strong></a> <br/>
+              <strong>Tags:</strong>
+                <span ng-if="item.tag1"><a href="" class="tag" ng-click="searchTagsInd(item.tag1)">{{item.tag1}}</a></span>
+                <span ng-if="item.tag2">, <a href="" class="tag" ng-click="searchTagsInd(item.tag2)">{{item.tag2}}</a></span>
+                <span ng-if="item.tag3">, <a href="" class="tag" ng-click="searchTagsInd(item.tag3)">{{item.tag3}}</a></span>
+                <span ng-if="item.tag4">, <a href="" class="tag" ng-click="searchTagsInd(item.tag4)">{{item.tag4}}</a></span>
+                <span ng-if="item.tag5">, <a href="" class="tag" ng-click="searchTagsInd(item.tag5)">{{item.tag5}}</a></span><br />
+              <strong>Status:</strong> {{item.status}} <span ng-if="item.status === 'Available'">({{item.quantityAvailable}})</span>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+ -->
+    </div>
+  </div>
+</div>
