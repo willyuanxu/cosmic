@@ -6,13 +6,13 @@
     <div>
       <div class="row">
     <div class="col-xs-12" ng-controller="checkoutLogCtrl as demo">
-      <table ng-table="tableParams" class="table table-condensed table-bordered table-striped">
+      <table ng-table="tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
         <tr ng-repeat="row in $data">
-          <td data-title="'Item'" filter="{name: 'text'}">{{row.name}}</td>
-          <td data-title="'Borrower Name'" filter="{borrowerName: 'text'}">{{row.checkout_user}}</td>
-          <td data-title="'Borrower Email'" filter="{borrowerEmail: 'text'}">{{row.checkout_useremail}}</td>
-          <td data-title="'Quantity'">{{row.quantity}}</td>
-          <td data-title="'Expected Return'">{{row.return_date}}</td>
+          <td data-title="'Item'" filter="{name: 'text'}" sortable="'name'">{{row.name}}</td>
+          <td data-title="'Borrower Name'" filter="{checkout_user: 'text'}" sortable="'checkout_user'">{{row.checkout_user}}</td>
+          <td data-title="'Borrower Email'" filter="{checkout_useremail: 'text'}" sortable="'checkout_useremail'">{{row.checkout_useremail}}</td>
+          <td data-title="'Quantity'" sortable="'quantity'">{{row.quantity}}</td>
+          <td data-title="'Expected Return'" sortable="'return_date'">{{row.return_date}}</td>
           
         </tr>
       </table>
