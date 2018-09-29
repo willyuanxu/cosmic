@@ -86,7 +86,6 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
             checkoutUserName: checkoutUserName,
             date: Date(),
           }).then(function (results) {
-            console.log(results);
             if(results.substractVal && results.updateStatus && results.updatedCheckedOutTable){
               Data.toast({status:"success",message:"Item checked out"});
             }
@@ -123,7 +122,6 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
       Data.post('getItem', {
         itemid: $routeParams.itemID
       }).then(function (results) {
-        // console.log(results);
         $scope.data = results;
         $scope.updatedItemDetails = {};
         $scope.updatedItemDetails.name = $scope.data.name;
@@ -195,7 +193,6 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
             HardwareID: mysql_real_escape_string( $scope.updatedItemDetails.hardware),
             desc: mysql_real_escape_string ($scope.updatedItemDetails.desc),
         }).then(function (results) {
-          console.log(results);
           Data.toast({status:"success",message:"Item details updated."});
           $scope.getItemDetails();
         });
@@ -284,7 +281,6 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
   $scope.dropReservation = function(index) {
     Data.get('session').then(function (results) {
         if (results.uid) {
-          //console.log($rootScope.uid)
           Data.post('dropReservation', {
             itemid: parseInt($routeParams.itemID),
             user: $rootScope.uid,
@@ -324,13 +320,25 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
             var quantityPerDay = results.reservations.map(function(reservation) {
               if(reservation["return_date"].indexOf("-") == -1) // if checkout
               {
-                return {
-                  start: moment().format("YYYY/MM/DD"),
-                  end: moment(reservation["return_date"], "MM/DD/YYYY").format("YYYY/MM/DD"),
-                  quantity: parseInt(reservation["quantity"]),
-                  reserved: false,
-                  checkedOut: true
-                };
+                if(moment().isAfter(moment(reservation["return_date"], "MM/DD/YYYY"))){
+                  return{
+                    start:moment(reservation["return_date"], "MM/DD/YYYY").format("YYYY/MM/DD") ,
+                    end: moment().format("YYYY/MM/DD"),
+                    quantity: parseInt(reservation["quantity"]),
+                    reserved: false,
+                    checkedOut: true
+                  };
+                }
+                else{
+                  return {
+                    start: moment().format("YYYY/MM/DD"),
+                    end: moment(reservation["return_date"], "MM/DD/YYYY").format("YYYY/MM/DD"),
+                    quantity: parseInt(reservation["quantity"]),
+                    reserved: false,
+                    checkedOut: true
+                  };
+                }
+                
               }
               else // must be a reserved item
               {
@@ -368,7 +376,6 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
   }
 
   $scope.deleteItem = function() {
-    //console.log("delete");
 
     var r = confirm("Are you sure you want to delete this item?");
     if (r == true) {
@@ -376,7 +383,6 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
       Data.post('getItemCheckedOut', {
         itemid: $routeParams.itemID,
       }).then(function (results) {
-        //console.log(results);
         if(results.length != 0){
           Data.toast({status:"error",message:"Item is checked out. Cannot delete item."});
         }
@@ -384,27 +390,15 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
           Data.post('getItemReservations', {
             itemid: $routeParams.itemID,
           }).then(function (results2) {
-            //console.log(results2);
             if(results2.length != 0){
               Data.toast({status:"error",message:"Item is reserved. Cannot delete item."});
             }
             else{
 
 
-              //console.log("going to delete");
               Data.post('deleteItem', {
                 itemid: $routeParams.itemID,
               }).then(function (results3) {
-                // console.log(results3);
-
-                /*if(results3.image)
-                {
-                  Data.toast({status:"success",message:"Item deleted."});
-                }
-                else if(!results3.image)
-                {
-                  Data.toast({status:"error",message:"Item not deleted."});
-                }*/
 
                 if(results3.sqlDelete)
                 {
@@ -477,19 +471,16 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
       var sum = quantity;
       for(event in $scope.events)
       {
-        //console.log($scope.events[event])
         if(overlappingRanges(startMoment, startMoment, moment($scope.events[event].start,"YYYY/MM/DD"), moment($scope.events[event].end,"YYYY/MM/DD")))
         {
           sum += $scope.events[event].quantity;
         }
       }
-      //console.log(sum);
       if(sum > $scope.quantityTotal)
       {
         return false;
       }
       startMoment.add(1, 'day');
-      //console.log(startMoment);
     }
     return true;
   };

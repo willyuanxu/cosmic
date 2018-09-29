@@ -32,7 +32,6 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
           uid: results.uid
         }).then(function (results) {
           $scope.data = results;
-          console.log(results);
         });
       }
       $scope.show = true;
@@ -45,7 +44,6 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
         Data.post('getReserved', {
           uid: results.uid
         }).then(function (results) {
-          //console.log(results);
           $scope.reservations = results;
         });
       }
@@ -73,14 +71,12 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     Data.post('getHardwareIDCheckin', {
         itemid: itemid,
       }).then(function (results) {
-        console.log(results);
         // $scope.hardwareID = results;
         for (key in results){
         	$scope.hardwareID.push({label: results[key]['HardwareID']});
         }
 
       });
-  		console.log($scope.hardwareID);
 
 };
 
@@ -102,7 +98,6 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
 		}
     });
 
-    console.log(tickedItems);
 
 
     if(checkInQuantity == 0 && tickedItems.length == 1 && tickedItems[0] == "")
@@ -152,7 +147,6 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
               }
               else
               {
-                                  console.log(results);
                 Data.toast({status:"error",message:"There was an error when trying to check in the item."});
               }
 
@@ -228,14 +222,12 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
 	    Data.post('getHardwareID', {
 	        itemid: $scope.reservations[index].itemid,
 	      }).then(function (results) {
-	        console.log(results);
 	        // $scope.hardwareID = results;
 	        for (key in results){
 	        	$scope.hardwareID.push({label: results[key]['HardwareID']});
 	        }
 
 	      });
-	  		console.log($scope.hardwareID);
     });
 
   }

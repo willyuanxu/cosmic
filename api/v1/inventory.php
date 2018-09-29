@@ -424,8 +424,8 @@ $app->post('/checkOutReservation', function() use ($app) {
 
             $ids = "";
             for ($x = 0; $x < count($uniqueItemIDs); $x++) {
-                $sql4 = "UPDATE `HardwareTable` SET `available`=0 WHERE `itemid` = $itemid AND `HardwareID`=".$uniqueItemIDs[$x] ;
-                $ids=" ".$uniqueItemIDs[$x];
+                $sql4 = "UPDATE `HardwareTable` SET `available`=0 WHERE `itemid` = $itemid AND `HardwareID`='".$uniqueItemIDs[$x]."'" ;
+                $ids.=" ".$uniqueItemIDs[$x];
                 $db->update($sql4);
             }
 
@@ -436,7 +436,7 @@ $app->post('/checkOutReservation', function() use ($app) {
             $sql3 = "UPDATE `items` SET `status` = 'Unavailable' WHERE `quantityAvailable` = 0 AND `itemid` = " . $itemid;
             $results["updateStatus"] = $db->update($sql3);
 
-       store_data($resUserName, $resUserEmail, $uid, $itemid, $quantity, "Reservation Check Out", $uniqueItemIDs, $return_date);
+       store_data($resUserName, $resUserEmail, $uid, $itemid, $quantity, "Reservation Check Out", $ids, $return_date);
 
 
 
