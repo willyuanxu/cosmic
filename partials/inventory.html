@@ -24,11 +24,25 @@
         </div>
 
         <div class="col-md-3">
-          <div class="input-group input-group-md add-on searchbar">
+         <!--  <div class="input-group input-group-md add-on searchbar">
              <select class="form-control input-md pull-right custom-select searchbar" ng-model="queryLocation"  ng-change="searchLoc()" ng-options="x['location'] for x in locations">
 				<option value="" > Search Location  </option>
              </select>
-          </div>
+          </div> -->
+          <isteven-multi-select
+    		input-model="locationResults"
+    		output-model="queryLocation"
+    		button-label="label"
+    		item-label="label"
+    		tick-property="ticked"
+			output-properties="label ticked"
+			on-item-click="searchLoc()"
+			on-select-all="searchLoc()"
+			on-select-none="fSelectNone()"
+			helper-elements="all none filter"
+    		>
+		</isteven-multi-select>
+
         </div>
 
 

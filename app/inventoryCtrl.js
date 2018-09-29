@@ -10,6 +10,8 @@ app.controller("inventoryCtrl", ['$scope','$filter','$http','Data','screenSize' 
   $scope.mobile = screenSize.on('xs, sm', function(match){
       $scope.mobile = match;
   });
+  $scope.locationResults = [];
+  $scope.queryLocation = [];
 
   var sortingOrder = 'name'; //default sort
 
@@ -27,7 +29,25 @@ app.controller("inventoryCtrl", ['$scope','$filter','$http','Data','screenSize' 
       $scope.locations = [];
        Data.post('getLocationsList', {
       }).then(function (results) {
-        $scope.locations = results;
+	
+      	$scope.locations = results;
+
+      	for (let i = 0; i < results.length; i++){
+
+			$scope.locationResults.push({
+				label: results[i]['location'],
+				ticked: false,
+			});
+
+			$scope.locationResults.sort(function(a,b){
+				return a['label'][0] - b['label'][0];
+			})
+      	}
+
+   //    	for (){
+   //    		console.log(x.location);
+			// // $scope.locationResults.push(x['location']);
+   //    	}
       });
 
       Data.post('getInventory', {
@@ -194,9 +214,26 @@ app.controller("inventoryCtrl", ['$scope','$filter','$http','Data','screenSize' 
     $scope.groupToPages();
   };
 
+  $scope.fSelectNone = function(){
+	$scope.queryLocation = [];
+	$scope.searchLoc();
+  }
+
   $scope.searchLoc = function () {
+  	if ($scope.queryLocation.length == 0){
+  		Data.post('getInventory', {
+      }).then(function (results) {
+        $scope.items = results;
+        $scope.show = true;
+        $scope.showAvailable = true;
+        $scope.showUnavailable = true;
+        $scope.searchAll();
+      });
+  	}
     $scope.filteredItems = $filter('filter')($scope.items, function (item) {
-      if ( searchMatch(item["location"], $scope.queryLocation.location))
+    	
+    	for (let i = 0; i < $scope.queryLocation.length; i++)
+      if ( searchMatch(item["location"], $scope.queryLocation[i]['label']))
           {
             // console.log(item);
             // console.log("item name: " + item["name"] + ", location name: " + item["location"]);
