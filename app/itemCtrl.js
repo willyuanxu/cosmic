@@ -86,7 +86,6 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
             checkoutUserName: checkoutUserName,
             date: Date(),
           }).then(function (results) {
-            console.log(results);
             if(results.substractVal && results.updateStatus && results.updatedCheckedOutTable){
               Data.toast({status:"success",message:"Item checked out"});
             }

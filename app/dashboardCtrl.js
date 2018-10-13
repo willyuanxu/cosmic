@@ -42,7 +42,8 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     Data.get('session').then(function (results) {
       if (results.uid) {
         Data.post('getReserved', {
-          uid: results.uid
+          uid: results.uid,
+          useremail: results.email
         }).then(function (results) {
           $scope.reservations = results;
         });
@@ -56,7 +57,6 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     Data.post('getItemHardwareFlag', {
       itemid: itemid,
     }).then(function (results) {
-      console.log(results);
       document.getElementById('checkInModal').style.display = "block";
       $scope.checkInData = {checkOutQuantity: quantity, checkInConsumed: null, checkInQuantity: null, note: "", checkoutid:checkoutid, itemid: itemid, itemname: itemname, isHardware: results.hardware, HardwareUniqueIDs: "", borrowerName:name, borrowerEmail:email};
 
