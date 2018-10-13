@@ -51,14 +51,14 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     });
   };
 
-  $scope.checkIn = function (itemname, itemid, quantity, name, email) {
-	
+  $scope.checkIn = function (checkoutid, itemname, itemid, quantity, name, email) {
 
     Data.post('getItemHardwareFlag', {
       itemid: itemid,
     }).then(function (results) {
+      console.log(results);
       document.getElementById('checkInModal').style.display = "block";
-      $scope.checkInData = {checkOutQuantity: quantity, checkInConsumed: null, checkInQuantity: null, note: "", itemid: itemid, itemname: itemname, isHardware: results.hardware, HardwareUniqueIDs: "", borrowerName:name, borrowerEmail:email};
+      $scope.checkInData = {checkOutQuantity: quantity, checkInConsumed: null, checkInQuantity: null, note: "", checkoutid:checkoutid, itemid: itemid, itemname: itemname, isHardware: results.hardware, HardwareUniqueIDs: "", borrowerName:name, borrowerEmail:email};
 
     });
 
@@ -130,6 +130,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
               itemname: $scope.checkInData.itemname,
               uid: results.uid,
               useremail: results.email,
+              checkoutid: $scope.checkInData.checkoutid,
               checkInQuantity: $scope.checkInData.checkInQuantity,
               checkInConsumed: $scope.checkInData.checkInConsumed,
               borrowerName: $scope.checkInData.borrowerName,

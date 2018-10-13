@@ -40,7 +40,7 @@ $app->post('/getCalendarInfo', function() use ($app) {
 $app->post('/getCheckoutList', function() use ($app) {
     $db = new DbHandler();
     // $sql = "SELECT `itemid` , `name` , `tag1` , `tag2` , `tag3` , `tag4` , `tag5` , `status`, `quantityAvailable` FROM `items`";
-    $sql = "SELECT A.itemid, B.name, A.checkout_user, A.checkout_useremail, A.quantity, A.return_date FROM items_checkedout AS A, items AS B WHERE A.itemid = B.itemid";
+    $sql = "SELECT A.checkoutid, A.itemid, B.name, A.checkout_user, A.checkout_useremail, A.quantity, A.return_date FROM items_checkedout AS A, items AS B WHERE A.itemid = B.itemid";
     $result = $db->getMultRecords($sql);
     $response = $result;
     echoResponse(200, $response);
@@ -191,7 +191,7 @@ $app->post('/getCheckedOut', function() use ($app) {
     $r = json_decode($app->request->getBody());
     $uid = $r->uid;
     $db = new DbHandler();
-    $sql = "SELECT A.itemid, B.name, A.checkout_user, A.checkout_useremail, A.quantity FROM items_checkedout AS A, items AS B WHERE A.itemid = B.itemid AND uid = $uid";
+    $sql = "SELECT A.checkoutid, A.itemid, B.name, A.checkout_user, A.checkout_useremail, A.quantity, A.return_date FROM items_checkedout AS A, items AS B WHERE A.itemid = B.itemid AND uid = $uid";
     $result = $db->getMultRecords($sql);
     echoResponse(200, $result);
 });
@@ -459,6 +459,7 @@ $app->post('/checkIn', function() use ($app) {
     $itemid = $r->itemid;
     $itemname = $r->itemname;
     $useremail = $r->useremail;
+    $checkoutid = $r->checkoutid;
     $checkInConsumed = $r->checkInConsumed;
     $checkInQuantity = $r->checkInQuantity;
     $checkoutUserName = $r->borrowerName;
@@ -476,18 +477,18 @@ $app->post('/checkIn', function() use ($app) {
     $emailManager = $emailManager["email"];
 
 
-    $sql = "SELECT * FROM `items_checkedout` WHERE `itemid`=$itemid AND `uid` = $uid AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
+    $sql = "SELECT * FROM `items_checkedout` WHERE `itemid`=$itemid AND `uid` = $uid AND `checkoutid` = '$checkoutid' AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
     $results["checkedout"] = $db->getOneRecord($sql);
 
     //if user actually has the item checked out
     if($results["checkedout"]){
 
         // Update the value of the quantity
-        $sql = "UPDATE `items_checkedout` SET `quantity`=(`quantity`- $checkInConsumed - $checkInQuantity) WHERE `itemid`=$itemid AND `uid` = $uid AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
+        $sql = "UPDATE `items_checkedout` SET `quantity`=(`quantity`- $checkInConsumed - $checkInQuantity) WHERE `itemid`=$itemid AND `uid` = $uid AND `checkoutid` = '$checkoutid' AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
         $results["updateCheckOut"] = $db->update($sql);
 
         // Remove from items checked out if quantity checked out is now 0
-        $sql = "DELETE FROM `items_checkedout` WHERE `itemid`=$itemid AND `uid` = $uid AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName' AND `quantity`=0";
+        $sql = "DELETE FROM `items_checkedout` WHERE `itemid`=$itemid AND `uid` = $uid AND `checkoutid` = '$checkoutid' AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName' AND `quantity`=0";
         $results["dropCheckOut"] = $db->update($sql);
 
         // Update quantity available & quantity total

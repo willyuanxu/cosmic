@@ -37,6 +37,7 @@
             <th class="name">Borrower Name</th>
             <th class="name">Borrower Email</th>
             <th class="tags">Quantity</th>
+            <th class="return_date"> Return Date </th>
             <th class="checkIn">Check In</th>
           </tr>
         </tbody>
@@ -47,7 +48,8 @@
             <td>{{item.checkout_user}}</td>
             <td>{{item.checkout_useremail}}</td>
             <td>{{item.quantity}}</td>
-            <td><button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="checkIn(item.name,item.itemid,item.quantity, item.checkout_user, item.checkout_useremail)">Check In</button></td>
+            <td> {{item.return_date}} </td>
+            <td><button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="checkIn(item.checkoutid,item.name,item.itemid,item.quantity, item.checkout_user, item.checkout_useremail)">Check In</button></td>
           </tr>
         </tbody>
       </table>
