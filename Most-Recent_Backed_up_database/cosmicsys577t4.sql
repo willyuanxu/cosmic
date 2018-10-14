@@ -426,7 +426,10 @@ INSERT INTO `items` VALUES(418, 0, 'Screw Bulbs', 'Small screw in lightbulbs', '
 -- Table structure for table `items_checkedout`
 --
 
+DROP TABLE IF EXISTS `items_checkedout`;
+
 CREATE TABLE `items_checkedout` (
+  `checkoutid` int(11) NOT NULL AUTO_INCREMENT,
   `itemid` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
@@ -435,7 +438,7 @@ CREATE TABLE `items_checkedout` (
   `checkout_useremail` varchar(80) NOT NULL DEFAULT '',
   `checkout_adminusername` varchar(80) DEFAULT NULL,
   `checkout_adminemail` varchar(80) DEFAULT NULL,
-  PRIMARY KEY (`itemid`,`checkout_user`,`checkout_useremail`),
+  PRIMARY KEY (`checkoutid`,`itemid`,`checkout_user`,`checkout_useremail`),
   KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -443,102 +446,108 @@ CREATE TABLE `items_checkedout` (
 -- Dumping data for table `items_checkedout`
 --
 
-INSERT INTO `items_checkedout` VALUES(9, 381, 1, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
-INSERT INTO `items_checkedout` VALUES(11, 372, 1, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
-INSERT INTO `items_checkedout` VALUES(11, 377, 1, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
-INSERT INTO `items_checkedout` VALUES(11, 392, 1, '10/16/2018', 'Taylor Gaines', 'tgaines@usc.edu', 'Taylor Gaines', 'tgaines@usc.edu');
-INSERT INTO `items_checkedout` VALUES(35, 364, 2, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(37, 378, 1, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
-INSERT INTO `items_checkedout` VALUES(43, 389, 2, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(55, 364, 2, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(64, 380, 1, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
-INSERT INTO `items_checkedout` VALUES(64, 386, 1, '10/11/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
-INSERT INTO `items_checkedout` VALUES(65, 364, 12, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(73, 371, 2, '10/16/2018', 'Daeclan Myrick', 'dmyrick@usc.edu', 'Daeclan Myrick', 'dmyrick@usc.edu');
-INSERT INTO `items_checkedout` VALUES(73, 377, 1, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
-INSERT INTO `items_checkedout` VALUES(73, 381, 2, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
-INSERT INTO `items_checkedout` VALUES(74, 371, 8, '10/16/2018', 'Daeclan Myrick', 'dmyrick@usc.edu', 'Daeclan Myrick', 'dmyrick@usc.edu');
-INSERT INTO `items_checkedout` VALUES(74, 363, 4, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
-INSERT INTO `items_checkedout` VALUES(74, 377, 1, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
-INSERT INTO `items_checkedout` VALUES(74, 380, 1, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
-INSERT INTO `items_checkedout` VALUES(77, 389, 1, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(78, 334, 6, '09/25/2018', 'Ben Louie', 'blouie@usc.edu', 'Ben Louie', 'blouie@usc.edu');
-INSERT INTO `items_checkedout` VALUES(83, 364, 3, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(87, 364, 8, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(87, 363, 8, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
-INSERT INTO `items_checkedout` VALUES(87, 378, 25, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
-INSERT INTO `items_checkedout` VALUES(87, 379, 11, '10/17/2018', 'Nina Jordao', 'njordao@usc.edu', 'Nina Jordao', 'njordao@usc.edu');
-INSERT INTO `items_checkedout` VALUES(87, 380, 10, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
-INSERT INTO `items_checkedout` VALUES(87, 382, 12, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
-INSERT INTO `items_checkedout` VALUES(87, 392, 30, '10/16/2018', 'Taylor Gaines', 'tgaines@usc.edu', 'Taylor Gaines', 'tgaines@usc.edu');
-INSERT INTO `items_checkedout` VALUES(90, 372, 5, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
-INSERT INTO `items_checkedout` VALUES(95, 389, 2, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(101, 364, 8, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(101, 363, 10, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
-INSERT INTO `items_checkedout` VALUES(101, 382, 15, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
-INSERT INTO `items_checkedout` VALUES(102, 359, 6, '10/12/2018', 'Grishma Varal', 'varal@usc.edu', 'Material Manager', 'stemeopmaterials@gmail.com');
-INSERT INTO `items_checkedout` VALUES(107, 389, 2, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(109, 385, 5, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
-INSERT INTO `items_checkedout` VALUES(110, 386, 10, '10/12/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
-INSERT INTO `items_checkedout` VALUES(113, 389, 2, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(114, 389, 1, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(120, 386, 2, '10/12/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
-INSERT INTO `items_checkedout` VALUES(122, 389, 1, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 364, 3, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 372, 2, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 363, 5, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 359, 6, '10/12/2018', 'Grishma Varal', 'varal@usc.edu', 'Material Manager', 'stemeopmaterials@gmail.com');
-INSERT INTO `items_checkedout` VALUES(126, 377, 2, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 378, 1, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 385, 3, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 380, 7, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 386, 15, '09/28/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 382, 5, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
-INSERT INTO `items_checkedout` VALUES(126, 392, 8, '10/16/2018', 'Taylor Gaines', 'tgaines@usc.edu', 'Taylor Gaines', 'tgaines@usc.edu');
-INSERT INTO `items_checkedout` VALUES(133, 389, 5, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(134, 372, 11, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
-INSERT INTO `items_checkedout` VALUES(134, 377, 50, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
-INSERT INTO `items_checkedout` VALUES(134, 391, 60, '10/12/2018', 'Nigrah Bamb', 'bamb@usc.edu', 'Nigrah Bamb', 'bamb@usc.edu');
-INSERT INTO `items_checkedout` VALUES(134, 382, 80, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
-INSERT INTO `items_checkedout` VALUES(134, 392, 40, '10/16/2018', 'Taylor Gaines', 'tgaines@usc.edu', 'Taylor Gaines', 'tgaines@usc.edu');
-INSERT INTO `items_checkedout` VALUES(142, 364, 164, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(142, 372, 30, '10/09/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
-INSERT INTO `items_checkedout` VALUES(142, 381, 60, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
-INSERT INTO `items_checkedout` VALUES(145, 385, 2, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
-INSERT INTO `items_checkedout` VALUES(147, 389, 5, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(151, 364, 30, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(151, 378, 8, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
-INSERT INTO `items_checkedout` VALUES(151, 380, 20, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
-INSERT INTO `items_checkedout` VALUES(162, 386, 15, '09/28/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
-INSERT INTO `items_checkedout` VALUES(163, 364, 30, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
-INSERT INTO `items_checkedout` VALUES(163, 363, 15, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
-INSERT INTO `items_checkedout` VALUES(163, 385, 20, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
-INSERT INTO `items_checkedout` VALUES(168, 381, 40, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
-INSERT INTO `items_checkedout` VALUES(168, 386, 350, '10/11/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
-INSERT INTO `items_checkedout` VALUES(172, 389, 4, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(173, 382, 80, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
-INSERT INTO `items_checkedout` VALUES(178, 359, 156, '10/12/2018', 'Grishma Varal', 'varal@usc.edu', 'Material Manager', 'stemeopmaterials@gmail.com');
-INSERT INTO `items_checkedout` VALUES(178, 386, 300, '10/11/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
-INSERT INTO `items_checkedout` VALUES(181, 372, 30, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
-INSERT INTO `items_checkedout` VALUES(181, 391, 40, '10/11/2018', 'Nigrah Bamb', 'bamb@usc.edu', 'Nigrah Bamb', 'bamb@usc.edu');
-INSERT INTO `items_checkedout` VALUES(181, 386, 100, '09/28/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
-INSERT INTO `items_checkedout` VALUES(184, 359, 20, '10/12/2018', 'Grishma Varal', 'varal@usc.edu', 'Material Manager', 'stemeopmaterials@gmail.com');
-INSERT INTO `items_checkedout` VALUES(184, 378, 80, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
-INSERT INTO `items_checkedout` VALUES(187, 382, 100, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
-INSERT INTO `items_checkedout` VALUES(190, 371, 1, '10/16/2018', 'Daeclan Myrick', 'dmyrick@usc.edu', 'Daeclan Myrick', 'dmyrick@usc.edu');
-INSERT INTO `items_checkedout` VALUES(321, 334, 3, '10/10/2018', 'Ben Louie', 'blouie@usc.edu', 'Ben Louie', 'blouie@usc.edu');
-INSERT INTO `items_checkedout` VALUES(322, 389, 1, '10/03/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
-INSERT INTO `items_checkedout` VALUES(328, 380, 35, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
-INSERT INTO `items_checkedout` VALUES(333, 385, 4, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
-INSERT INTO `items_checkedout` VALUES(334, 385, 4, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
-INSERT INTO `items_checkedout` VALUES(335, 391, 40, '10/11/2018', 'Nigrah Bamb', 'bamb@usc.edu', 'Nigrah Bamb', 'bamb@usc.edu');
-INSERT INTO `items_checkedout` VALUES(345, 385, 20, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
-INSERT INTO `items_checkedout` VALUES(361, 388, 7, '12/09/2018', 'Vikram Gupta', 'vikramg@usc.edu', 'Vikram Gupta', 'vikramg@usc.edu');
-INSERT INTO `items_checkedout` VALUES(362, 385, 10, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
-INSERT INTO `items_checkedout` VALUES(363, 385, 1, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
-INSERT INTO `items_checkedout` VALUES(367, 371, 1, '10/16/2018', 'Daeclan Myrick', 'dmyrick@usc.edu', 'Daeclan Myrick', 'dmyrick@usc.edu');
-INSERT INTO `items_checkedout` VALUES(367, 380, 4, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
-INSERT INTO `items_checkedout` VALUES(367, 381, 1, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
+INSERT INTO `items_checkedout` VALUES(1,9, 381, 1, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
+INSERT INTO `items_checkedout` VALUES(2,11, 372, 1, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
+INSERT INTO `items_checkedout` VALUES(3,11, 377, 1, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
+INSERT INTO `items_checkedout` VALUES(4,11, 392, 1, '10/16/2018', 'Taylor Gaines', 'tgaines@usc.edu', 'Taylor Gaines', 'tgaines@usc.edu');
+INSERT INTO `items_checkedout` VALUES(5,35, 364, 2, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(6,37, 378, 1, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
+INSERT INTO `items_checkedout` VALUES(7,43, 389, 2, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(8,55, 364, 2, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(9,64, 375, 1, '10/15/2018', 'Katarina Stanley', 'kestanle@usc.edu', 'Katarina Stanley', 'kestanle@usc.edu');
+INSERT INTO `items_checkedout` VALUES(10,64, 380, 1, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
+INSERT INTO `items_checkedout` VALUES(11,64, 386, 1, '10/11/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
+INSERT INTO `items_checkedout` VALUES(12,65, 364, 12, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(13,73, 371, 2, '10/16/2018', 'Daeclan Myrick', 'dmyrick@usc.edu', 'Daeclan Myrick', 'dmyrick@usc.edu');
+INSERT INTO `items_checkedout` VALUES(14,73, 377, 1, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
+INSERT INTO `items_checkedout` VALUES(15,73, 381, 2, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
+INSERT INTO `items_checkedout` VALUES(16,74, 371, 8, '10/16/2018', 'Daeclan Myrick', 'dmyrick@usc.edu', 'Daeclan Myrick', 'dmyrick@usc.edu');
+INSERT INTO `items_checkedout` VALUES(17,74, 363, 4, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
+INSERT INTO `items_checkedout` VALUES(18,74, 377, 1, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
+INSERT INTO `items_checkedout` VALUES(19,74, 380, 1, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
+INSERT INTO `items_checkedout` VALUES(20,77, 389, 1, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(21,78, 334, 6, '09/25/2018', 'Ben Louie', 'blouie@usc.edu', 'Ben Louie', 'blouie@usc.edu');
+INSERT INTO `items_checkedout` VALUES(22,83, 364, 3, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(23,87, 364, 8, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(24,87, 363, 8, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
+INSERT INTO `items_checkedout` VALUES(25,87, 375, 5, '10/15/2018', 'Katarina Stanley', 'kestanle@usc.edu', 'Katarina Stanley', 'kestanle@usc.edu');
+INSERT INTO `items_checkedout` VALUES(26,87, 378, 25, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
+INSERT INTO `items_checkedout` VALUES(27,87, 379, 11, '10/17/2018', 'Nina Jordao', 'njordao@usc.edu', 'Nina Jordao', 'njordao@usc.edu');
+INSERT INTO `items_checkedout` VALUES(28,87, 380, 10, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
+INSERT INTO `items_checkedout` VALUES(29,87, 382, 12, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
+INSERT INTO `items_checkedout` VALUES(30,87, 392, 30, '10/16/2018', 'Taylor Gaines', 'tgaines@usc.edu', 'Taylor Gaines', 'tgaines@usc.edu');
+INSERT INTO `items_checkedout` VALUES(31,90, 372, 5, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
+INSERT INTO `items_checkedout` VALUES(32,95, 389, 2, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(33,101, 364, 8, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(34,101, 363, 10, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
+INSERT INTO `items_checkedout` VALUES(35,101, 382, 15, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
+INSERT INTO `items_checkedout` VALUES(36,102, 359, 6, '10/12/2018', 'Grishma Varal', 'varal@usc.edu', 'Material Manager', 'stemeopmaterials@gmail.com');
+INSERT INTO `items_checkedout` VALUES(37,107, 389, 2, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(38,109, 385, 5, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
+INSERT INTO `items_checkedout` VALUES(39,110, 386, 10, '10/12/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
+INSERT INTO `items_checkedout` VALUES(40,113, 389, 2, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(41,114, 389, 1, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(42,120, 386, 2, '10/12/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
+INSERT INTO `items_checkedout` VALUES(43,122, 389, 1, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(44,126, 364, 3, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(45,126, 372, 2, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
+INSERT INTO `items_checkedout` VALUES(46,126, 363, 5, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
+INSERT INTO `items_checkedout` VALUES(47,126, 359, 6, '10/12/2018', 'Grishma Varal', 'varal@usc.edu', 'Material Manager', 'stemeopmaterials@gmail.com');
+INSERT INTO `items_checkedout` VALUES(48,126, 375, 2, '10/15/2018', 'Katarina Stanley', 'kestanle@usc.edu', 'Katarina Stanley', 'kestanle@usc.edu');
+INSERT INTO `items_checkedout` VALUES(49,126, 377, 2, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
+INSERT INTO `items_checkedout` VALUES(50,126, 378, 1, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
+INSERT INTO `items_checkedout` VALUES(51,126, 385, 3, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
+INSERT INTO `items_checkedout` VALUES(52,126, 380, 7, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
+INSERT INTO `items_checkedout` VALUES(53,126, 386, 15, '09/28/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
+INSERT INTO `items_checkedout` VALUES(54,126, 382, 5, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
+INSERT INTO `items_checkedout` VALUES(55,126, 392, 8, '10/16/2018', 'Taylor Gaines', 'tgaines@usc.edu', 'Taylor Gaines', 'tgaines@usc.edu');
+INSERT INTO `items_checkedout` VALUES(56,133, 389, 5, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(57,134, 372, 11, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
+INSERT INTO `items_checkedout` VALUES(58,134, 375, 40, '10/15/2018', 'Katarina Stanley', 'kestanle@usc.edu', 'Katarina Stanley', 'kestanle@usc.edu');
+INSERT INTO `items_checkedout` VALUES(59,134, 377, 50, '10/12/2018', 'Lindsey McWain', 'mcwain@usc.edu', 'Lindsey McWain', 'mcwain@usc.edu');
+INSERT INTO `items_checkedout` VALUES(60,134, 391, 60, '10/12/2018', 'Nigrah Bamb', 'bamb@usc.edu', 'Nigrah Bamb', 'bamb@usc.edu');
+INSERT INTO `items_checkedout` VALUES(61,134, 382, 80, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
+INSERT INTO `items_checkedout` VALUES(62,134, 392, 40, '10/16/2018', 'Taylor Gaines', 'tgaines@usc.edu', 'Taylor Gaines', 'tgaines@usc.edu');
+INSERT INTO `items_checkedout` VALUES(63,142, 364, 164, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(64,142, 372, 30, '10/09/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
+INSERT INTO `items_checkedout` VALUES(65,142, 381, 60, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
+INSERT INTO `items_checkedout` VALUES(66,145, 385, 2, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
+INSERT INTO `items_checkedout` VALUES(67,147, 389, 5, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(68,151, 364, 30, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(69,151, 378, 8, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
+INSERT INTO `items_checkedout` VALUES(70,151, 380, 20, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
+INSERT INTO `items_checkedout` VALUES(71,162, 386, 15, '09/28/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
+INSERT INTO `items_checkedout` VALUES(72,163, 364, 30, '10/22/2018', 'Angel Martinez', 'admartin@usc.edu', 'Angel Martinez', 'admartin@usc.edu');
+INSERT INTO `items_checkedout` VALUES(73,163, 363, 15, '10/16/2018', 'Giovanni Diaz', 'giovannd@usc.edu', 'Giovanni Diaz', 'giovannd@usc.edu');
+INSERT INTO `items_checkedout` VALUES(74,163, 385, 20, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
+INSERT INTO `items_checkedout` VALUES(75,168, 381, 40, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
+INSERT INTO `items_checkedout` VALUES(76,168, 386, 350, '10/11/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
+INSERT INTO `items_checkedout` VALUES(77,172, 389, 4, '09/25/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(78,173, 382, 80, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
+INSERT INTO `items_checkedout` VALUES(79,178, 359, 156, '10/12/2018', 'Grishma Varal', 'varal@usc.edu', 'Material Manager', 'stemeopmaterials@gmail.com');
+INSERT INTO `items_checkedout` VALUES(80,178, 386, 300, '10/11/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
+INSERT INTO `items_checkedout` VALUES(81,181, 372, 30, '10/10/2018', 'Edgar Bustos', 'ebustos@usc.edu', 'Edgar Bustos', 'ebustos@usc.edu');
+INSERT INTO `items_checkedout` VALUES(82,181, 391, 40, '10/11/2018', 'Nigrah Bamb', 'bamb@usc.edu', 'Nigrah Bamb', 'bamb@usc.edu');
+INSERT INTO `items_checkedout` VALUES(83,181, 386, 100, '09/28/2018', 'Shivani More', 'mores@usc.edu', 'Shivani More', 'mores@usc.edu');
+INSERT INTO `items_checkedout` VALUES(84,184, 359, 20, '10/12/2018', 'Grishma Varal', 'varal@usc.edu', 'Material Manager', 'stemeopmaterials@gmail.com');
+INSERT INTO `items_checkedout` VALUES(85,184, 378, 80, '10/12/2018', 'McKellan Cook', 'mckellac@usc.edu', 'McKellan Cook', 'mckellac@usc.edu');
+INSERT INTO `items_checkedout` VALUES(86,187, 382, 100, '10/12/2018', 'Tanmoy Sil', 'tsil@usc.edu', 'Tanmoy Sil', 'tsil@usc.edu');
+INSERT INTO `items_checkedout` VALUES(87,188, 375, 1, '10/15/2018', 'Katarina Stanley', 'kestanle@usc.edu', 'Katarina Stanley', 'kestanle@usc.edu');
+INSERT INTO `items_checkedout` VALUES(88,190, 371, 1, '10/16/2018', 'Daeclan Myrick', 'dmyrick@usc.edu', 'Daeclan Myrick', 'dmyrick@usc.edu');
+INSERT INTO `items_checkedout` VALUES(89,321, 334, 3, '10/10/2018', 'Ben Louie', 'blouie@usc.edu', 'Ben Louie', 'blouie@usc.edu');
+INSERT INTO `items_checkedout` VALUES(90,322, 389, 1, '10/03/2018', 'Ebrahim Kayali', 'ekayali@usc.edu', 'Ebrahim Kayali', 'ekayali@usc.edu');
+INSERT INTO `items_checkedout` VALUES(91,328, 380, 35, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
+INSERT INTO `items_checkedout` VALUES(92,333, 385, 4, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
+INSERT INTO `items_checkedout` VALUES(93,334, 385, 4, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
+INSERT INTO `items_checkedout` VALUES(94,335, 391, 40, '10/11/2018', 'Nigrah Bamb', 'bamb@usc.edu', 'Nigrah Bamb', 'bamb@usc.edu');
+INSERT INTO `items_checkedout` VALUES(95,345, 385, 20, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
+INSERT INTO `items_checkedout` VALUES(96,361, 388, 7, '12/09/2018', 'Vikram Gupta', 'vikramg@usc.edu', 'Vikram Gupta', 'vikramg@usc.edu');
+INSERT INTO `items_checkedout` VALUES(97,362, 385, 10, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
+INSERT INTO `items_checkedout` VALUES(98,363, 385, 1, '10/11/2018', 'Narcy Gonzalez', 'narcygon@usc.edu', 'Narcy Gonzalez', 'narcygon@usc.edu');
+INSERT INTO `items_checkedout` VALUES(99,367, 371, 1, '10/16/2018', 'Daeclan Myrick', 'dmyrick@usc.edu', 'Daeclan Myrick', 'dmyrick@usc.edu');
+INSERT INTO `items_checkedout` VALUES(100,367, 380, 4, '10/12/2018', 'Paul Lepe', 'paullepe@usc.edu', 'Paul Lepe', 'paullepe@usc.edu');
+INSERT INTO `items_checkedout` VALUES(101,367, 381, 1, '10/10/2018', 'Sehaj Kand', 'kand@usc.edu', 'Sehaj Kand', 'kand@usc.edu');
+
 
 -- --------------------------------------------------------
 
@@ -546,14 +555,18 @@ INSERT INTO `items_checkedout` VALUES(367, 381, 1, '10/10/2018', 'Sehaj Kand', '
 -- Table structure for table `items_reserved`
 --
 
+DROP TABLE IF EXISTS `items_reserved`;
+
 CREATE TABLE `items_reserved` (
+`reservedid` int(11) NOT NULL auto_increment,
   `itemid` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
   `username` varchar(200) NOT NULL,
   `useremail` varchar(200) NOT NULL,
   `quantity` int(11) NOT NULL,
   `daterange` varchar(200) NOT NULL,
-  PRIMARY KEY (`itemid`,`username`,`useremail`,`quantity`,`daterange`),
+  `approved` tinyint(4) NOT NULL,
+  PRIMARY KEY (`reservedid`),
   KEY `items_reserved_ibfk_2` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -561,10 +574,10 @@ CREATE TABLE `items_reserved` (
 -- Dumping data for table `items_reserved`
 --
 
-INSERT INTO `items_reserved` VALUES(87, 359, 'Nigrah Bamb', 'bamb@usc.edu', 10, '10/10/2018 - 10/12/2018');
-INSERT INTO `items_reserved` VALUES(134, 359, 'Nigrah Bamb', 'bamb@usc.edu', 60, '10/10/2018 - 10/12/2018');
-INSERT INTO `items_reserved` VALUES(188, 359, 'Nigrah Bamb', 'bamb@usc.edu', 40, '10/10/2018 - 10/12/2018');
-INSERT INTO `items_reserved` VALUES(142, 392, 'Taylor', 'tgaines@usc.edu', 50, '10/12/2018 - 10/22/2018');
+INSERT INTO `items_reserved` VALUES(1,87, 359, 'Nigrah Bamb', 'bamb@usc.edu', 10, '10/10/2018 - 10/12/2018',1);
+INSERT INTO `items_reserved` VALUES(2,134, 359, 'Nigrah Bamb', 'bamb@usc.edu', 60, '10/10/2018 - 10/12/2018',1);
+INSERT INTO `items_reserved` VALUES(3,188, 359, 'Nigrah Bamb', 'bamb@usc.edu', 40, '10/10/2018 - 10/12/2018',1);
+INSERT INTO `items_reserved` VALUES(4,142, 392, 'Taylor', 'tgaines@usc.edu', 50, '10/12/2018 - 10/22/2018',1);
 
 -- --------------------------------------------------------
 
