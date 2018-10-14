@@ -205,6 +205,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     Data.post('getItemHardwareFlag', {
       itemid: $scope.reservations[index].itemid,
     }).then(function (results) {
+      console.log(results);
       if(results.hardware == 1)
       {
         document.getElementById('checkOutHardwareModal').style.display = "block";
@@ -277,6 +278,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
         Data.get('session').then(function (results) {
           if (results.uid) {
             Data.post('checkOutReservation', {
+              reservedid: $scope.reservations[index].reservedid,
               itemid: $scope.reservations[index].itemid,
               ckoutUserName: $scope.reservations[index].username,
               ckoutUserEmail: $scope.reservations[index].useremail,
@@ -285,6 +287,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
               daterange: $scope.reservations[index].daterange,
               uniqueItemIDs: tickedItems,
             }).then(function (results) {
+              console.log(results);
               if(results["duplicate"]){
                 Data.toast({status:"error",message:"User must return all previously checkout items before checking out again."});
               }

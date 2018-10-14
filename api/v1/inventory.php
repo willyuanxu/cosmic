@@ -25,7 +25,7 @@ $app->post('/getCalendarInfo', function() use ($app) {
     $db = new DbHandler();
     $r = json_decode($app->request->getBody());
     $itemid = $r->itemid;
-    $sql = "SELECT quantity, return_date FROM items_checkedout WHERE itemid = $itemid  UNION SELECT quantity, daterange  FROM items_reserved WHERE itemid =  ".$itemid;
+    $sql = "SELECT quantity, return_date FROM items_checkedout WHERE itemid = $itemid  UNION SELECT quantity, daterange  FROM items_reserved WHERE approved = 1 AND itemid =  ".$itemid;
     $result["reservations"] = $db->getMultRecords($sql);
     $quantityTotal = $db->getOneRecord("SELECT quantityTotal FROM items WHERE itemid = $itemid");
     $result["quantityTotal"] = $quantityTotal["quantityTotal"];
@@ -50,7 +50,7 @@ $app->post('/getCheckoutList', function() use ($app) {
 $app->post('/getReservedList', function() use ($app) {
     $db = new DbHandler();
     // $sql = "SELECT `itemid` , `name` , `tag1` , `tag2` , `tag3` , `tag4` , `tag5` , `status`, `quantityAvailable` FROM `items`";
-    $sql = "SELECT * FROM items_reserved";
+    $sql = "SELECT * FROM items_reserved ";
     $result = $db->getMultRecords($sql);
     $response = $result;
     echoResponse(200, $response);
@@ -278,6 +278,23 @@ $app->post('/updateItemDetails', function() use ($app) {
     echoResponse(200, $results);
 });
 
+$app->post('/updatePendingReservation', function() use ($app) {
+    $r = json_decode($app->request->getBody());
+    $reservationid = $r->reservationid;
+    $adminid = $r->adminid;
+    $db = new DbHandler();
+
+    $sql = "UPDATE `items_reserved` SET `approved` = 1, `uid` = $adminid WHERE `reservedid` = $reservationid";
+    $results = $db->update($sql);
+
+    $sql2 = "SELECT * FROM `items_reserved` WHERE `reservedid` = $reservationid";
+    $rInfo = $db->getOneRecord($sql2);
+     
+    store_data($rInfo["username"], $rInfo["useremail"], $rInfo["uid"], $rInfo["itemid"], $rInfo["quantity"], "Reserved", "", $rInfo["daterange"]);
+    echoResponse(200, $results);
+
+
+});
 /* Add a new reservation */
 $app->post('/addReservation', function() use ($app) {
     $r = json_decode($app->request->getBody());
@@ -287,6 +304,7 @@ $app->post('/addReservation', function() use ($app) {
     $resUserName = $r->resUserName;
     $quantity = $r->quantity;
     $dates = $r->dates;
+    $approved = $r->approved;
     // $res = $r->res;
     $db = new DbHandler();
 
@@ -301,7 +319,7 @@ $app->post('/addReservation', function() use ($app) {
     else
     {
         // Add the reservation into the items reserved table
-        $sql = "INSERT INTO `items_reserved`(`itemid`, `uid`, `username`, `useremail`, `quantity`, `daterange`) VALUES ($itemid, $uid, '$resUserName', '$resUserEmail', $quantity, '$dates')";
+        $sql = "INSERT INTO `items_reserved`(`itemid`, `uid`, `username`, `useremail`, `quantity`, `daterange`, `approved`) VALUES ($itemid, $uid, '$resUserName', '$resUserEmail', $quantity, '$dates', $approved)";
         $results["addRes"] = $db->update($sql);
 
         /*// Update the quantity available for the item
@@ -311,21 +329,53 @@ $app->post('/addReservation', function() use ($app) {
         // Update the item status to unavailable if the quantity available is now 0
         $sql3 = "UPDATE `items` SET `status` = 'Unavailable' WHERE `quantityAvailable` = 0 AND `itemid` = " . $itemid;
         $results["updateStatus"] = $db->update($sql3);*/
+        if($approved == 1){
+            store_data($resUserName, $resUserEmail, $uid, $itemid, $quantity, "Reserved", "", $dates);
+        }else{
+            store_data($resUserName, $resUserEmail, "N/A" , $itemid, $quantity, "Reservation Request", "", $dates);
 
-        store_data($resUserName, $resUserEmail, $uid, $itemid, $quantity, "Reserved", "", $dates);
+        }
         echoResponse(200, $results);
     }
 });
 
-/* Get a single item's reservations */
+/* Get a single item's APPROVED reservations */
 $app->post('/getItemReservations', function() use ($app) {
     $r = json_decode($app->request->getBody());
+    $uid = $r->uid;
+    $email = $r->email;
     $itemid = $r->itemid;
     $db = new DbHandler();
-    $sql = "SELECT items_reserved.daterange, users.email, items_reserved.username, items_reserved.useremail,items_reserved.quantity\n"
+    $sql = "SELECT items_reserved.uid, items_reserved.daterange, users.name, users.email, items_reserved.username, items_reserved.useremail,items_reserved.quantity\n"
     . "FROM items_reserved\n"
     . "INNER JOIN users ON items_reserved.uid=users.uid\n"
-    . "WHERE items_reserved.itemid = $itemid ";
+    . "WHERE items_reserved.itemid = $itemid AND items_reserved.approved = 1";
+    if($uid != ""){
+        $sql .= " AND items_reserved.uid  = $uid";
+    }else if($email != ""){
+        $sql .= " AND items_reserved.useremail  =  '$email'";
+    }
+
+    $result = $db->getMultRecords($sql);
+    echoResponse(200, $result);
+});
+
+/* Get a single item's reservations */
+$app->post('/getItemPendingReservations', function() use ($app) {
+    $r = json_decode($app->request->getBody());
+    $uid = $r->uid;
+    $email = $r->email;
+    $itemid = $r->itemid;
+    $db = new DbHandler();
+    $sql = "SELECT items_reserved.reservedid,items_reserved.uid, items_reserved.daterange, users.name, users.email, items_reserved.username, items_reserved.useremail,items_reserved.quantity\n"
+    . "FROM items_reserved\n"
+    . "INNER JOIN users ON items_reserved.uid=users.uid\n"
+    . "WHERE items_reserved.itemid = $itemid AND items_reserved.approved = 0";
+    //admin will see all pending reservations for that item but other users will only see their own pending reservations
+    if($email != ""){
+        $sql .= " AND items_reserved.useremail  =  '$email'";
+    }
+
     $result = $db->getMultRecords($sql);
     echoResponse(200, $result);
 });
@@ -336,7 +386,7 @@ $app->post('/getReserved', function() use ($app) {
     $uid = $r->uid;
     $uEmail = $r->useremail;
     $db = new DbHandler();
-    $sql = "SELECT A.itemid, B.name, A.username,A.useremail, A.quantity, A.daterange FROM items_reserved AS A, items AS B WHERE A.itemid = B.itemid AND (uid = $uid OR `useremail` = '$uEmail') ";
+    $sql = "SELECT  A.reservedid, A.itemid, B.name, A.username,A.useremail, A.quantity, A.daterange FROM items_reserved AS A, items AS B WHERE A.itemid = B.itemid AND A.approved = 1 AND (uid = $uid OR `useremail` = '$uEmail') ";
     $result = $db->getMultRecords($sql);
     echoResponse(200, $result);
 });
@@ -385,6 +435,7 @@ $app->post('/dropReservation', function() use ($app) {
 $app->post('/checkOutReservation', function() use ($app) {
     $r = json_decode($app->request->getBody());
     $uid = $r->uid;
+    $reservedid = $r->reservedid;
     $itemid = $r->itemid;
     //TODO: fill in below
     $resUserName = $r->ckoutUserName;
@@ -400,8 +451,7 @@ $app->post('/checkOutReservation', function() use ($app) {
     $userEmail = $user["email"];
 
 
-     $sql = "SELECT * FROM `items_reserved` WHERE `uid` = $uid AND `itemid` = $itemid AND `daterange` = '$daterange' AND `quantity` = $quantity AND `username` = '$resUserName' AND `useremail` ='$resUserEmail' ";
-
+     $sql = "SELECT * FROM `items_reserved` WHERE `reservedid` = $reservedid";
     $results['checkReservation'] = $db->getOneRecord($sql);
 
     if($results['checkReservation']){

@@ -59,11 +59,14 @@ function store_data($borrowername, $borroweremail, $uid, $itemid, $quantity, $ac
       $time = date("h:ia");
 
       $db = new DbHandler();
-
+      $name = "N/A";
+      if($uid != "N/A"){
       //get user name and email from database
-      $sql = "SELECT `name`, `email` from `users` where uid = $uid";
-      $user = $db->getOneRecord($sql);
-      $name = $user["name"];
+        $sql = "SELECT `name`, `email` from `users` where uid = $uid";
+        $user = $db->getOneRecord($sql);
+        $name = $user["name"];
+        }
+
       // $email = $user["email"];
       $email = $borroweremail;
 
@@ -76,7 +79,7 @@ function store_data($borrowername, $borroweremail, $uid, $itemid, $quantity, $ac
 
       if ($action == "Check Out" || $action == "Reservation Check Out") {
         $expectedreturn = $CRInput;
-      } else if ($action == "Reserved") {
+      } else if ($action == "Reserved" || $action == "Reservation Request") {
         $daterange = $CRInput;
       }
 
