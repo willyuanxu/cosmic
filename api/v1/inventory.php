@@ -585,7 +585,7 @@ $app->post('/checkIn', function() use ($app) {
     }
 
      //If quantity total is less than threshold, send a re-order email to the director
-    $sql = "SELECT * FROM `items` WHERE `quantityTotal`<`reorderThreshold` AND `itemid`=$itemid";
+    $sql = "SELECT * FROM `items` WHERE `quantityTotal`=`reorderThreshold` AND `itemid`=$itemid";
     $reorder = $db->getOneRecord($sql);
 
     if($reorder == NULL) // Do not need to reorder
@@ -603,14 +603,14 @@ $app->post('/checkIn', function() use ($app) {
         $message = "<b> $itemname </b> total quantity has dropped below the reorder threshold. <br><br> There are now only $newQuantityTotal in the inventory. It is recommended you reorder this item.";
 
         // Get the admin's emails to send reorder email
-        $sql = "SELECT `email` FROM `users` WHERE `type` = 'Admin'";
-        $emails = $db->getMultRecords($sql);
-        $emails = (array) $emails;
-        $to = "";
-        foreach($emails as $curr)
-        {
-            $to = $to . " ," . $curr["email"];
-        }
+        // $sql = "SELECT `email` FROM `users` WHERE `type` = 'Admin'";
+        // $emails = $db->getMultRecords($sql);
+        // $emails = (array) $emails;
+        $to = "stemeopmaterials@gmail.com ,daring@usc.edu";
+        // foreach($emails as $curr)
+        // {
+        //     $to = $to . " ," . $curr["email"];
+        // }
         $results["emailReorder"] =  mail($to,$subject,$message,$headers);
     }
 
