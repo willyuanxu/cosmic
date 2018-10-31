@@ -29,7 +29,9 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     Data.get('session').then(function (results) {
       if (results.uid) {
         Data.post('getCheckedOut', {
-          uid: results.uid
+          uid: results.uid,
+          useremail: results.email,
+          type: results.type
         }).then(function (results) {
           $scope.data = results;
         });
@@ -50,6 +52,76 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
       }
       $scope.show = true;
     });
+  };
+
+  $scope.getPendingReserved = function () {
+    Data.get('session').then(function (results) {
+      if (results.uid) {
+        Data.post('getPendingReserved', {
+        }).then(function (results) {
+          $scope.pendingReservations = results;
+        });
+      }
+    });
+  };
+
+  $scope.getUserPendingReserved = function () {
+    Data.get('session').then(function (results) {
+      if (results.uid) {
+        Data.post('getUserPendingReserved', {
+          useremail: results.email
+        }).then(function (results) {
+          console.log(results);
+          $scope.userPendingReservations = results;
+        });
+      }
+    });
+  };
+
+  $scope.updatePendingReservation = function(index) {
+    Data.get('session').then(function (results){
+      if(results.uid){
+        Data.post('updatePendingReservation', {
+          reservationid: $scope.pendingReservations[index].reservedid,
+          adminid: results.uid
+        }).then(function(results){
+          if(results){
+              Data.toast({status:"success",message:"Reservation Approved."});
+          } else{
+              Data.toast({status:"error",message:"There was an error when try to approve the reservation."});
+
+          }
+        });
+        $scope.getReserved();
+        $scope.getPendingReserved();
+      }
+    });
+  };
+
+  $scope.dropPendingReservation = function(index) {
+    Data.get('session').then(function (results) {
+        if (results.uid) {
+          Data.post('dropReservation', {
+            reservedid: $scope.pendingReservations[index].reservedid,
+            uid: results.uid
+          }).then(function (results) {
+            // console.log(results);
+            if(results["dropReservation"])
+            {
+              Data.toast({status:"success",message:"Reservation cancelled."});
+            }
+            else
+            {
+              Data.toast({status:"error",message:"There was an error when try to cancel the reservation."});
+            }
+          });
+          $scope.getReserved();
+          $scope.getPendingReserved();
+          $scope.getUserPendingReserved();
+
+
+        }
+      });
   };
 
   $scope.checkIn = function (checkoutid, itemname, itemid, quantity, name, email) {
@@ -138,6 +210,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
               hardwareNotes: tickedItems,
               note: $scope.checkInData.note,
             }).then(function (results) {
+              console.log(results);
               if( results["updateCheckOut"] && results["dropCheckOut"] && results["updateStatus"] )
               {
                 Data.toast({status:"success",message:"Item checked in."});
@@ -168,7 +241,8 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
       if (results.uid) {
         Data.post('dropReservation', {
           itemid: $scope.reservations[index].itemid,
-          user: results.uid,
+          uid: results.uid,
+          reservedid:$scope.reservations[index].reservedid,
           quantity: parseInt($scope.reservations[index].quantity),
           daterange: $scope.reservations[index].daterange,
           borrowerName: $scope.reservations[index].username,
@@ -186,6 +260,8 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
 
         });
         $scope.getReserved();
+        $scope.getUserPendingReserved();
+
       }
     });
   };
@@ -205,7 +281,6 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     Data.post('getItemHardwareFlag', {
       itemid: $scope.reservations[index].itemid,
     }).then(function (results) {
-      console.log(results);
       if(results.hardware == 1)
       {
         document.getElementById('checkOutHardwareModal').style.display = "block";
@@ -287,7 +362,6 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
               daterange: $scope.reservations[index].daterange,
               uniqueItemIDs: tickedItems,
             }).then(function (results) {
-              console.log(results);
               if(results["duplicate"]){
                 Data.toast({status:"error",message:"User must return all previously checkout items before checking out again."});
               }
@@ -317,5 +391,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
 
   $scope.getCheckedOut();
   $scope.getReserved();
+   $scope.getPendingReserved();
+   $scope.getUserPendingReserved();
 
 });

@@ -1,5 +1,9 @@
 app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$http, Data, $location) {
 
+  $scope.show = false;
+
+  $scope.checkOutData = { hasIDs: 0, HardwareUniqueIDs: ""};
+
   $(function () {
     $('[data-toggle="tooltip"]').tooltip();
   });
@@ -118,9 +122,10 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
         }
 
       });
-
       Data.post('getItem', {
-        itemid: $routeParams.itemID
+        itemid: $routeParams.itemID,
+        useremail: results.email,
+        type: results.type
       }).then(function (results) {
         $scope.data = results;
         $scope.updatedItemDetails = {};
@@ -237,13 +242,13 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
   };
 
   $scope.updatePendingReservation = function(index) {
+
     Data.get('session').then(function (results){
       if(results.uid){
         Data.post('updatePendingReservation', {
           reservationid: $scope.pendingReservations[index].reservedid,
           adminid: results.uid
         }).then(function(results){
-          console.log(results);
           if(results){
               Data.toast({status:"success",message:"Reservation Approved."});
           } else{
@@ -258,27 +263,107 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
 
       }
     });
+
+    
+   
+  };
+
+   $scope.checkOutReservation = function (index) {
+    console.log($scope.reservations); 
+    Data.post('getItemHardwareFlag', {
+      itemid: $scope.reservations[index].itemid,
+    }).then(function (results) {
+      if(results.hardware == 1)
+      {
+        document.getElementById('checkOutHardwareModal').style.display = "block";
+        $scope.checkOutHardwareModalID = index;
+        $scope.checkOutData.hasIDs = 1;
+        $scope.checkOutData.quantity = $scope.reservations[index].quantity;
+      }
+      else
+      {
+        $scope.checkOutReservationSuccess(index);
+      }
+
+      $scope.queryHardwareID = [];
+
+      $scope.hardwareID = [];
+      Data.post('getHardwareID', {
+          itemid: $scope.reservations[index].itemid,
+        }).then(function (results) {
+          // $scope.hardwareID = results;
+          for (key in results){
+            $scope.hardwareID.push({label: results[key]['HardwareID']});
+          }
+
+        });
+    });
+
+  }
+
+   $scope.checkOutReservationSuccess = function (index) {
+
+      var tickedItems = [];
+      angular.forEach( $scope.hardwareID, function( value, key ) {
+        if(value.ticked){
+          tickedItems.push(value.label);
+        }
+      });
+
+      if($scope.checkOutData.hasIDs == 1 && tickedItems.length != $scope.reservations[index].quantity)
+      {
+        Data.toast({status:"error",message:"Please select " + $scope.reservations[index].quantity + " total unique item IDs, one for each item you are checking out."});
+      }
+      else
+      {
+        Data.get('session').then(function (results) {
+          if (results.uid) {
+            Data.post('checkOutReservation', {
+              reservedid: $scope.reservations[index].reservedid,
+              itemid: $scope.reservations[index].itemid,
+              ckoutUserName: $scope.reservations[index].username,
+              ckoutUserEmail: $scope.reservations[index].useremail,
+              uid: results.uid,
+              quantity: parseInt($scope.reservations[index].quantity),
+              daterange: $scope.reservations[index].daterange,
+              uniqueItemIDs: tickedItems,
+            }).then(function (results) {
+              if(results["duplicate"]){
+                Data.toast({status:"error",message:"User must return all previously checkout items before checking out again."});
+              }
+              else if(results["dropReservation"] && results["addCheckedOut"] && results["substractVal"] && results["updateStatus"])
+              {
+                Data.toast({status:"success",message:"Reservation checked out."});
+              }
+              else
+              {
+                Data.toast({status:"error",message:"There was an error when trying to check out the reservation."});
+              }
+            });
+            $scope.checkOutHardwareUniqueIDs = "";
+            $scope.checkOutData.hasIDs = 0;
+            $scope.checkOutData.quantity = 0;
+            $scope.getItemDetails();
+            $scope.getItemReservations();
+            $scope.getItemPendingReservations();
+            $scope.getCalendarInfo();
+          }
+        });
+      }
+   }
+
+   $scope.checkOutHardwareButtonClick = function () {
+    $scope.checkOutReservationSuccess($scope.checkOutHardwareModalID);
+    document.getElementById('checkOutHardwareModal').style.display = "none";
+  };
+
+  $scope.checkOutHardwareButtonCancel = function () {
+    document.getElementById('checkOutHardwareModal').style.display = "none";
+    Data.toast({status:"info",message:"Check Out cancelled."});
   };
 
   $scope.updateReservations = function() {
-    var dates = $('#newResDates').val();
-    var dateStart = dates.split(" ");
-    console.log(dateStart);
 
-    dateStart = dateStart[0];
-
-    var parts = dateStart.split('/')
-    var startDateObj = new Date(parts[2],parts[0]-1,parts[1]);
-
-    let dateEndParts = dateStart[2].split('/');
-    let returnDateObj = new Date(dateEndParts[2], dateEndParts[0]-1, dateEndParts[1]);
-
- /*   var returnDateObj = new Date();
-    var returnDateObj = new Date(returnDateObj.getFullYear(),returnDateObj
-      .getMonth(),returnDateObj.getDate());
-    returnDateObj.setDate(returnDateObj.getDate()+21);
-*/
-    var resQuantity = filterInt($scope.newRes.quantity);
     let adminEmail;
     let borrowerName;
     let borrowerEmail;
@@ -295,6 +380,19 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
       borrowerName = $rootScope.name;
 
     }
+
+    var dates = $('#newResDates').val();
+    var tempDates = dates.split(" ");
+
+
+    var dateStartParts = tempDates[0].split('/')
+    var startDateObj = new Date(dateStartParts[2],dateStartParts[0]-1,dateStartParts[1]);
+
+    let dateEndParts = tempDates[2].split('/');
+    let returnDateObj = new Date(dateEndParts[2], dateEndParts[0]-1, dateEndParts[1]);
+
+    var resQuantity = filterInt($scope.newRes.quantity);
+    
 
     var todayDateObj = new Date();
     todayDateObj = new Date(todayDateObj.getFullYear(),todayDateObj
@@ -354,12 +452,8 @@ $scope.dropPendingReservation = function(index) {
     Data.get('session').then(function (results) {
         if (results.uid) {
           Data.post('dropReservation', {
-            itemid: parseInt($routeParams.itemID),
-            user: $scope.pendingReservations[index].uid,
-            quantity: parseInt($scope.pendingReservations[index].quantity),
-            daterange: $scope.pendingReservations[index].daterange,
-            borrowerName: $scope.pendingReservations[index].username,
-            borrowerEmail: $scope.pendingReservations[index].useremail
+            reservedid: $scope.pendingReservations[index].reservedid,
+            uid: results.uid
           }).then(function (results) {
             // console.log(results);
             if(results["dropReservation"])
@@ -384,16 +478,12 @@ $scope.dropPendingReservation = function(index) {
 
   $scope.dropReservation = function(index) {
     Data.get('session').then(function (results) {
-      console.log(results);
-
+      
         if (results.uid) {
           Data.post('dropReservation', {
-            itemid: parseInt($routeParams.itemID),
-            user: $scope.reservations[index].uid,
-            quantity: parseInt($scope.reservations[index].quantity),
-            daterange: $scope.reservations[index].daterange,
-            borrowerName: $scope.reservations[index].username,
-            borrowerEmail: $scope.reservations[index].useremail
+            reservedid: $scope.reservations[index].reservedid,
+            uid: results.uid
+            
           }).then(function (results) {
             // console.log(results);
             if(results["dropReservation"])
@@ -577,7 +667,9 @@ $scope.dropPendingReservation = function(index) {
     $scope.getCalendarInfo();
 
     var startMoment = moment(start);
-    console.log(end);
+    // console.log(start);
+    // console.log(startMoment);
+    // console.log(end);
 
     while(startMoment.isSameOrBefore(moment(end), 'day'))
     {
@@ -586,9 +678,9 @@ $scope.dropPendingReservation = function(index) {
       {
         if(overlappingRanges(startMoment, startMoment, moment($scope.events[event].start,"YYYY/MM/DD"), moment($scope.events[event].end,"YYYY/MM/DD")))
         {
-        console.log(startMoment + "   " + $scope.events[event].start+ "   " + $scope.events[event].end);
+        // console.log(startMoment + "   " + $scope.events[event].start+ "   " + $scope.events[event].end);
 
-            console.log($scope.events[event].quantity);
+            // console.log($scope.events[event].quantity);
           sum += $scope.events[event].quantity;
         }
       }
@@ -605,7 +697,9 @@ $scope.dropPendingReservation = function(index) {
 
 //takes in 4 moment objects
 function overlappingRanges(lhsStart, lhsEnd, rhsStart, rhsEnd){
-  if(lhsEnd.isSameOrBefore(rhsStart, 'day') || rhsEnd.isSameOrBefore(lhsStart, 'day'))
+
+
+  if(lhsEnd.isSameOrAfter(rhsStart) && lhsEnd.isSameOrBefore(rhsEnd))
   {
     return true;
   }

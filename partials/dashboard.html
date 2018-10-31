@@ -26,6 +26,87 @@
 
   <div ng-if="type !== 'Organization'">
     <div clas="clearfix"><br /></div>
+    <h4 ng-if="type === 'Admin' ">Pending Reservations <div class="badge" ng-if="pendingReservations.length > 0">{{ pendingReservations.length }}</div></h4>
+    <!-- Item Pending Reservations ADMIN -->
+  <div class="card" ng-if="type === 'Admin' ">
+    <div class="card-header">
+      <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Approve pending student reservations"></i> Pending Reservations 
+      <button class="btn btn-primary pull-right" type="button" data-toggle="collapse" data-target="#pendingReservationCard" aria-expanded="false" aria-controls="checkoutCard">
+      <i class="fa fa-chevron-down" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div id="pendingReservationCard" class="collapse"><div class="card-block">
+
+      <p ng-if="pendingReservations.length == 0">There are no pending reservations.</p>
+      <span ng-if="pendingReservations.length != 0">
+        <table class="table table-striped table-hover">
+        <tbody>
+          <tr>
+            <th>Item</th>
+            <th>Name</th>
+            <th>Dates</th>
+            <th>Borrower Name</th>
+            <th>Borrower Email</th>
+            <th>Quantity</th>
+            <th> Approve </th>
+            <th>Cancel</th>
+          </tr>
+          <tr ng-repeat="reservation in pendingReservations ">
+            <td><a href="#items/{{reservation.itemid}}"><img src="./images/items/{{reservation.itemid}}.jpg" class="img-thumbnail inventory-image"></a></td>
+            <td>{{reservation.name}}</td>
+            <td>{{reservation.daterange}}</td>
+             <td>{{reservation.username}}</td>
+            <td>{{reservation.useremail}}</td>
+            <td>{{reservation.quantity}}</td>
+            <td ><button type="submit" class="btn btn-primary" ng-click="updatePendingReservation($index)" data-ng-disabled="">Approve</button></td>
+
+            <td><button type="submit" class="btn btn-primary" ng-click="dropPendingReservation($index)" data-ng-disabled="">Cancel</button></td>
+          </tr>
+        </tbody>
+        </table>
+      </span>
+
+     
+
+    </div></div>
+  </div>
+  <!-- /Item Pending Reservations ADMIN -->
+
+   <div clas="clearfix"><br /></div>
+    <h4 ng-if="type === 'USC Student' ">Pending Reservations </h4>
+    <!-- Item Pending Reservations STUDENT -->
+    <div  ng-if="type === 'USC Student' && userPendingReservations.length >0 ">
+      <span ng-if="userPendingReservations.length != 0">
+        <table class="table table-striped table-hover">
+        <tbody>
+          <tr>
+            <th>Item</th>
+            <th>Name</th>
+            <th>Dates</th>
+            <th>Quantity</th>
+            <th>Cancel</th>
+          </tr>
+          <tr ng-repeat="item in userPendingReservations">
+            <td><a href="#items/{{item.itemid}}"><img src="./images/items/{{item.itemid}}.jpg" class="img-thumbnail inventory-image"></a></td>
+            <td>{{item.name}}</td>
+            <td>{{item.daterange}}</td>
+            <td>{{item.quantity}}</td>
+            <td><button type="submit" class="btn btn-primary" ng-click="dropPendingReservation($index)" data-ng-disabled="">Cancel</button></td>
+          </tr>
+        </tbody>
+        </table>
+      </span>
+
+     </div>
+
+      <div ng-if="type === 'USC Student' && userPendingReservations.length == 0">
+        <p>You have no pending reservations awaiting administrator approval.</p>
+      </div>
+
+
+  <!-- /Item Pending Reservations STUDENT -->
+
+<div clas="clearfix"><br /></div>
 
     <h4>Items Checked Out</h4>
     <div ng-if="data.length > 0">
@@ -71,8 +152,8 @@
             <th class="name">Borrower Email</th>
             <th class="tags">Quantity</th>
             <th class="tags">Dates</th>
-            <th class="checkIn">Cancel</th>
             <th class="checkIn">Check Out</th>
+            <th class="checkIn">Cancel</th>
           </tr>
         </tbody>
         <tbody>
@@ -83,8 +164,8 @@
             <td>{{item.useremail}}</td>
             <td>{{item.quantity}}</td>
             <td>{{item.daterange}}</td>
-            <td><button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="dropReservation($index);">Cancel</button></td>
             <td><button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="checkOutReservation($index);">Check Out</button></td>
+            <td><button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="dropReservation($index);">Cancel</button></td>
           </tr>
         </tbody>
       </table>
@@ -166,6 +247,7 @@
         </form>
       </div>
     </div>
+    <!-- end Check Out Hardware Modal -->
   </div>
 
 </div>

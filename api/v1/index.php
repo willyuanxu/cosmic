@@ -79,7 +79,7 @@ function store_data($borrowername, $borroweremail, $uid, $itemid, $quantity, $ac
 
       if ($action == "Check Out" || $action == "Reservation Check Out") {
         $expectedreturn = $CRInput;
-      } else if ($action == "Reserved" || $action == "Reservation Request") {
+      } else if ($action == "Reserved" || $action == "Reservation Request" || $action == "Reservation Approved") {
         $daterange = $CRInput;
       }
 

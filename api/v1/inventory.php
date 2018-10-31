@@ -25,7 +25,7 @@ $app->post('/getCalendarInfo', function() use ($app) {
     $db = new DbHandler();
     $r = json_decode($app->request->getBody());
     $itemid = $r->itemid;
-    $sql = "SELECT quantity, return_date FROM items_checkedout WHERE itemid = $itemid  UNION SELECT quantity, daterange  FROM items_reserved WHERE approved = 1 AND itemid =  ".$itemid;
+    $sql = "SELECT quantity, return_date FROM items_checkedout WHERE itemid = $itemid  UNION SELECT quantity, daterange  FROM items_reserved WHERE   itemid =  ".$itemid;
     $result["reservations"] = $db->getMultRecords($sql);
     $quantityTotal = $db->getOneRecord("SELECT quantityTotal FROM items WHERE itemid = $itemid");
     $result["quantityTotal"] = $quantityTotal["quantityTotal"];
@@ -190,8 +190,16 @@ $app->post('/checkOut', function() use ($app) {
 $app->post('/getCheckedOut', function() use ($app) {
     $r = json_decode($app->request->getBody());
     $uid = $r->uid;
+    $uemail = $r->useremail;
+    $type = $r->type;
     $db = new DbHandler();
-    $sql = "SELECT A.checkoutid, A.itemid, B.name, A.checkout_user, A.checkout_useremail, A.quantity, A.return_date FROM items_checkedout AS A, items AS B WHERE A.itemid = B.itemid AND uid = $uid";
+    $sql = "SELECT A.checkoutid, A.itemid, B.name, A.checkout_user, A.checkout_useremail, A.quantity, A.return_date FROM items_checkedout AS A, items AS B WHERE A.itemid = B.itemid";
+
+    if($type == "Admin"){
+        $sql .= " AND uid = $uid";
+    }else if($type == "USC Student"){
+        $sql .= " AND checkout_useremail ='$uemail'";
+    }
     $result = $db->getMultRecords($sql);
     echoResponse(200, $result);
 });
@@ -290,7 +298,7 @@ $app->post('/updatePendingReservation', function() use ($app) {
     $sql2 = "SELECT * FROM `items_reserved` WHERE `reservedid` = $reservationid";
     $rInfo = $db->getOneRecord($sql2);
      
-    store_data($rInfo["username"], $rInfo["useremail"], $rInfo["uid"], $rInfo["itemid"], $rInfo["quantity"], "Reserved", "", $rInfo["daterange"]);
+    store_data($rInfo["username"], $rInfo["useremail"], $rInfo["uid"], $rInfo["itemid"], $rInfo["quantity"], "Reservation Approved", "", $rInfo["daterange"]);
     echoResponse(200, $results);
 
 
@@ -339,6 +347,18 @@ $app->post('/addReservation', function() use ($app) {
     }
 });
 
+/* Get an user's pending reservation */
+$app->post('/getUserPendingReserved', function() use($app) {
+     $r = json_decode($app->request->getBody());
+    $useremail = $r->useremail;
+     $db = new DbHandler();
+
+     
+    $sql = "SELECT  A.reservedid, A.itemid, B.name, A.username,A.useremail, A.quantity, A.daterange FROM items_reserved AS A, items AS B WHERE A.itemid = B.itemid AND A.approved = 0 AND A.useremail ='$useremail'";
+    // echo $sql;
+    $result = $db->getMultRecords($sql);
+    echoResponse(200, $result);
+});
 /* Get a single item's APPROVED reservations */
 $app->post('/getItemReservations', function() use ($app) {
     $r = json_decode($app->request->getBody());
@@ -346,7 +366,7 @@ $app->post('/getItemReservations', function() use ($app) {
     $email = $r->email;
     $itemid = $r->itemid;
     $db = new DbHandler();
-    $sql = "SELECT items_reserved.uid, items_reserved.daterange, users.name, users.email, items_reserved.username, items_reserved.useremail,items_reserved.quantity\n"
+    $sql = "SELECT items_reserved.reservedid, items_reserved.itemid, items_reserved.uid, items_reserved.daterange, users.name, users.email, items_reserved.username, items_reserved.useremail,items_reserved.quantity \n"
     . "FROM items_reserved\n"
     . "INNER JOIN users ON items_reserved.uid=users.uid\n"
     . "WHERE items_reserved.itemid = $itemid AND items_reserved.approved = 1";
@@ -386,44 +406,42 @@ $app->post('/getReserved', function() use ($app) {
     $uid = $r->uid;
     $uEmail = $r->useremail;
     $db = new DbHandler();
-    $sql = "SELECT  A.reservedid, A.itemid, B.name, A.username,A.useremail, A.quantity, A.daterange FROM items_reserved AS A, items AS B WHERE A.itemid = B.itemid AND A.approved = 1 AND (uid = $uid OR `useremail` = '$uEmail') ";
+    $sql = "SELECT  A.reservedid , A.itemid, B.name, A.username,A.useremail, A.quantity, A.daterange FROM items_reserved AS A, items AS B WHERE A.itemid = B.itemid AND A.approved = 1 AND (uid = $uid OR `useremail` = '$uEmail') ";
     $result = $db->getMultRecords($sql);
     echoResponse(200, $result);
 });
-
+/* Get the item's details for items pending reservation approval */
+$app->post('/getPendingReserved', function() use ($app) {
+    $r = json_decode($app->request->getBody());
+    $db = new DbHandler();
+    $sql = "SELECT  A.reservedid, A.itemid, B.name, A.username,A.useremail, A.quantity, A.daterange FROM items_reserved AS A, items AS B WHERE A.itemid = B.itemid AND A.approved = 0 ";
+    $result = $db->getMultRecords($sql);
+    echoResponse(200, $result);
+});
 /* Drop a particular reservation */
 $app->post('/dropReservation', function() use ($app) {
     $r = json_decode($app->request->getBody());
     // print_r($r);
-    $uid = $r->user;
-    $itemid = $r->itemid;
-    //TODO: fill in below
-    $resUserName = $r->borrowerName;
-    $resUserEmail = $r->borrowerEmail;
-    $daterange = $r->daterange;
-    $quantity = $r->quantity;
+    $reservedid = $r->reservedid;
+    $uid = $r->uid;
+   
     $db = new DbHandler();
 
 
-    $sql = "SELECT * FROM `items_reserved` WHERE `uid` = $uid AND `itemid` = $itemid AND `daterange` = '$daterange' AND `quantity` = $quantity AND `username` = '$resUserName' AND `useremail` ='$resUserEmail' ";
+    $sql = "SELECT * FROM `items_reserved` WHERE `reservedid` = $reservedid ";
 
     $results['checkReservation'] = $db->getOneRecord($sql);
 
     if($results['checkReservation']){
          // Drop the entry from the items reserved table
-        $sql = "DELETE FROM `items_reserved` WHERE `uid` = $uid AND `itemid` = $itemid AND `daterange` = '$daterange' AND `quantity` = $quantity AND `username` = '$resUserName' AND `useremail` ='$resUserEmail' ";
+        $sql2 = "SELECT * FROM `items_reserved` WHERE `reservedid` = $reservedid";
+        $rInfo = $db->getOneRecord($sql2);
+     
+    
+        $sql = "DELETE FROM `items_reserved` WHERE `reservedid` = $reservedid  ";
         $results["dropReservation"] = $db->update($sql);
 
-
-        // // Update the quantity available for the item
-        // $sql2 = "UPDATE `items` SET `quantityAvailable` = `quantityAvailable` + $quantity WHERE `itemid` = $itemid";
-        // $results["addQuantity"] = $db->update($sql2);
-
-        // // Update the item status to available if the quantity available is now > 0
-        // $sql3 = "UPDATE `items` SET `status` = 'Available' WHERE `quantityAvailable` > 0 AND `itemid` = $itemid";
-        // $results["updateStatus"] = $db->update($sql3);
-
-        store_data($resUserName, $resUserEmail, $uid, $itemid, $quantity, "Reservation Cancelled", "", $daterange);
+        store_data($rInfo["username"], $rInfo["useremail"], $uid, $rInfo["itemid"], $rInfo["quantity"], "Reservation Cancelled", "", $rInfo["daterange"]);
 
     }
 
@@ -446,9 +464,10 @@ $app->post('/checkOutReservation', function() use ($app) {
     $db = new DbHandler();
 
 
-    $user = $db->getOneRecord("SELECT `email`, `name` FROM `users` WHERE `uid`=$uid");
+    $user = $db->getOneRecord("SELECT `type`,`email`, `name` FROM `users` WHERE `uid`=$uid");
     $userName = $user["name"];
     $userEmail = $user["email"];
+    $type = $user["type"];
 
 
      $sql = "SELECT * FROM `items_reserved` WHERE `reservedid` = $reservedid";
@@ -461,12 +480,12 @@ $app->post('/checkOutReservation', function() use ($app) {
         $return_date = $pieces[1];
 
         // check if the user has already checked out an item
-        $alreadyHaveThisItem =$db->getOneRecord("SELECT * FROM `items_checkedout` WHERE `uid` = $uid AND `checkout_user` = '$resUserName' AND `checkout_useremail` = '$resUserEmail'");
+        // $alreadyHaveThisItem =$db->getOneRecord("SELECT * FROM `items_checkedout` WHERE `uid` = $uid AND `checkout_user` = '$resUserName' AND `checkout_useremail` = '$resUserEmail'");
 
-        if($alreadyHaveThisItem == NULL){
+        // if($alreadyHaveThisItem == NULL){
 
             // Remove from the items reserved table
-            $sql = "DELETE FROM `items_reserved` WHERE `uid` = $uid AND `itemid` = $itemid AND `daterange` = '$daterange' AND `quantity` = $quantity";
+            $sql = "DELETE FROM `items_reserved` WHERE  `reservedid` = $reservedid AND `itemid` = $itemid AND `daterange` = '$daterange' AND `quantity` = $quantity";
             $results["dropReservation"] = $db->update($sql);
 
             // Add to the items checked out table
@@ -487,15 +506,20 @@ $app->post('/checkOutReservation', function() use ($app) {
             $sql3 = "UPDATE `items` SET `status` = 'Unavailable' WHERE `quantityAvailable` = 0 AND `itemid` = " . $itemid;
             $results["updateStatus"] = $db->update($sql3);
 
-       store_data($resUserName, $resUserEmail, $uid, $itemid, $quantity, "Reservation Check Out", $ids, $return_date);
+            if($type == "Admin"){
+                store_data($resUserName, $resUserEmail, $uid, $itemid, $quantity, "Reservation Check Out", $ids, $return_date);
+            }
+            else{
+                store_data($resUserName, $resUserEmail, "N/A", $itemid, $quantity, "Reservation Check Out", $ids, $return_date);
+            }
 
 
 
-        }
-        else{
+        // }
+        // else{
 
-            $results["duplicate"] = true;
-        }
+        //     $results["duplicate"] = true;
+        // }
 
 }
 
@@ -528,18 +552,19 @@ $app->post('/checkIn', function() use ($app) {
     $emailManager = $emailManager["email"];
 
 
-    $sql = "SELECT * FROM `items_checkedout` WHERE `itemid`=$itemid AND `uid` = $uid AND `checkoutid` = '$checkoutid' AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
+    $sql = "SELECT * FROM `items_checkedout` WHERE `itemid`=$itemid  AND `checkoutid` = '$checkoutid' AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
     $results["checkedout"] = $db->getOneRecord($sql);
+    // echo $sql;
 
     //if user actually has the item checked out
     if($results["checkedout"]){
 
         // Update the value of the quantity
-        $sql = "UPDATE `items_checkedout` SET `quantity`=(`quantity`- $checkInConsumed - $checkInQuantity) WHERE `itemid`=$itemid AND `uid` = $uid AND `checkoutid` = '$checkoutid' AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
+        $sql = "UPDATE `items_checkedout` SET `quantity`=(`quantity`- $checkInConsumed - $checkInQuantity) WHERE `itemid`=$itemid  AND `checkoutid` = '$checkoutid' AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName'";
         $results["updateCheckOut"] = $db->update($sql);
 
         // Remove from items checked out if quantity checked out is now 0
-        $sql = "DELETE FROM `items_checkedout` WHERE `itemid`=$itemid AND `uid` = $uid AND `checkoutid` = '$checkoutid' AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName' AND `quantity`=0";
+        $sql = "DELETE FROM `items_checkedout` WHERE `itemid`=$itemid  AND `checkoutid` = '$checkoutid' AND `checkout_useremail` = '$checkoutUserEmail' AND `checkout_user`=  '$checkoutUserName' AND `quantity`=0";
         $results["dropCheckOut"] = $db->update($sql);
 
         // Update quantity available & quantity total
@@ -590,13 +615,12 @@ $app->post('/checkIn', function() use ($app) {
     }
 
     // Email the manager the notes
-    $headers = "MIME-Version: 1.0" . "\r\n";
+    /*$headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
     $headers .= 'From: <cosmic-noreply@eccla.org>' . "\r\n";
     $subject = "COSMIC-System Check In Notification";
     $message = "<b> $itemname </b> has been checked in by $useremail <br><br> <b> $checkInConsumed </b> has/have been consumed or broken. <br><br> Notes: $note";
-    $results["emailManager"] = mail($emailManager,$subject,$message,$headers);
-
+    $results["emailManager"] = mail($emailManager,$subject,$message,$headers);*/
 
     if($checkInConsumed > 0)
     {

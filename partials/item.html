@@ -52,17 +52,7 @@
       </div>
     </tien-clndr>
 	</div>
-    
 
-
-    <!--<h5>Tags</h5>
-    <ul>
-    <li ng-if="data.tag1">{{data.tag1}}</li>
-    <li ng-if="data.tag2">{{data.tag2}}</li>
-    <li ng-if="data.tag3">{{data.tag3}}</li>
-    <li ng-if="data.tag4">{{data.tag4}}</li>
-    <li ng-if="data.tag5">{{data.tag5}}</li>
-    </ul>-->
   </div>
   <div class="clearfix"><br /></div>
   <!-- /Item description -->
@@ -194,6 +184,7 @@
             <th>Borrower Name</th>
             <th>Borrower Email</th>
             <th>Quantity</th>
+            <th>Check Out</th>
             <th>Cancel</th>
           </tr>
           <tr ng-repeat="reservation in reservations">
@@ -202,6 +193,7 @@
             <td>{{reservation.username}}</td>
             <td>{{reservation.useremail}}</td>
             <td>{{reservation.quantity}}</td>
+            <td><button type="submit" class="btn btn-primary" ng-click="checkOutReservation($index)" data-ng-disabled="">Check Out</button></td>
             <td><button type="submit" class="btn btn-primary" ng-click="dropReservation($index)" data-ng-disabled="">Cancel</button></td>
           </tr>
         </tbody>
@@ -210,7 +202,7 @@
       <div ng-if="type === 'USC Student'">
       <h5 >Pending Reservations</h5>
 
-      <p ng-if="pendingReservations.length == 0">No reservations found.</p>
+      <p ng-if="pendingReservations.length == 0">No pending reservations awaiting administrator approval.</p>
       <span ng-if="pendingReservations.length != 0">
         <table class="table table-striped table-hover">
         <tbody>
@@ -374,6 +366,33 @@
         </form>
       </div>
     </div>
+
+     <!-- Check Out Hardware Modal -->
+  <div id="checkOutHardwareModal" class="modal">
+      <div class="modal-content">
+        <h4>Check Out Hardware</h4>
+        <hr />
+        <form>
+          <div class="form-group">
+            <label>Enter Unique ID of Each Item<sup>*</sup></label>
+            <!-- <textarea class="form-control" rows="3" ng-model="checkOutData.HardwareUniqueIDs" placeholder="Enter unique ID of each item checked out, separated by commas and/or spaces" required></textarea> -->
+            <small>Enter unique ID of each item checked out, separated by spaces ({{checkOutData.quantity}} IDs Expected)</small>
+            <isteven-multi-select    
+          input-model="hardwareID"    
+          output-model="queryHardwareID"
+          button-label="label"
+          item-label="label"
+          tick-property="ticked" 
+        output-properties="label ticked"
+          >
+      </isteven-multi-select>
+          </div>
+          <button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="checkOutHardwareButtonClick()">Check Out</button>
+          <button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="checkOutHardwareButtonCancel()">Cancel</button>
+        </form>
+      </div>
+    </div>
+    <!-- end Check Out Hardware Modal -->
   </div>
 
 </div>
