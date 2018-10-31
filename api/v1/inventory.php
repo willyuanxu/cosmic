@@ -615,12 +615,12 @@ $app->post('/checkIn', function() use ($app) {
     }
 
     // Email the manager the notes
-    /*$headers = "MIME-Version: 1.0" . "\r\n";
+    $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
     $headers .= 'From: <cosmic-noreply@eccla.org>' . "\r\n";
     $subject = "COSMIC-System Check In Notification";
     $message = "<b> $itemname </b> has been checked in by $useremail <br><br> <b> $checkInConsumed </b> has/have been consumed or broken. <br><br> Notes: $note";
-    $results["emailManager"] = mail($emailManager,$subject,$message,$headers);*/
+    $results["emailManager"] = mail($emailManager,$subject,$message,$headers);
 
     if($checkInConsumed > 0)
     {
