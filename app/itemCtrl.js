@@ -1,9 +1,13 @@
 app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$http, Data, $location) {
 
+  $scope.show = false;
+
+  $scope.checkOutData = { hasIDs: 0, HardwareUniqueIDs: ""};
+
   $(function () {
     $('[data-toggle="tooltip"]').tooltip();
   });
-
+  $scope.type = $rootScope.type;
   $scope.uid = $rootScope.uid;
   $scope.user = $rootScope.email;
   $scope.checkout = {uid: $scope.uid, user: $scope.user, quantity: '', itemID: $routeParams.itemID, uniqueItemIDs: "" };
@@ -118,9 +122,10 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
         }
 
       });
-
       Data.post('getItem', {
-        itemid: $routeParams.itemID
+        itemid: $routeParams.itemID,
+        useremail: results.email,
+        type: results.type
       }).then(function (results) {
         $scope.data = results;
         $scope.updatedItemDetails = {};
@@ -145,10 +150,42 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
     });
   };
 
+  $scope.getItemPendingReservations = function() {
+    let uid = "";
+    let email= "";
+    if($scope.type === 'Admin'){
+      uid = $scope.uid
+
+    }else if($scope.type === 'USC Student'){
+      email = $scope.user;
+    }
+    Data.get('session').then(function (results) {
+    if (results.uid) {
+      Data.post('getItemPendingReservations', {
+        uid: uid,
+        email:email,
+        itemid: $routeParams.itemID
+      }).then(function (results) {
+        $scope.pendingReservations = results;
+      });
+    }
+    });
+  };
+
   $scope.getItemReservations = function() {
+    let uid = "";
+    let email= "";
+    if($scope.type === 'Admin'){
+      uid = $scope.uid
+
+    }else if($scope.type === 'USC Student'){
+      email = $scope.user;
+    }
     Data.get('session').then(function (results) {
     if (results.uid) {
       Data.post('getItemReservations', {
+        uid: uid,
+        email:email,
         itemid: $routeParams.itemID
       }).then(function (results) {
         $scope.reservations = results;
@@ -204,23 +241,158 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
     });
   };
 
-  $scope.updateReservations = function() {
-    var dates = $('#newResDates').val();
-    var dateStart = dates.split(" ");
-    dateStart = dateStart[0];
-    var parts = dateStart.split('/')
-    var startDateObj = new Date(parts[2],parts[0]-1,parts[1]);
+  $scope.updatePendingReservation = function(index) {
 
-    var returnDateObj = new Date();
-    var returnDateObj = new Date(returnDateObj.getFullYear(),returnDateObj
-      .getMonth(),returnDateObj.getDate());
-    returnDateObj.setDate(returnDateObj.getDate()+21);
+    Data.get('session').then(function (results){
+      if(results.uid){
+        Data.post('updatePendingReservation', {
+          reservationid: $scope.pendingReservations[index].reservedid,
+          adminid: results.uid
+        }).then(function(results){
+          if(results){
+              Data.toast({status:"success",message:"Reservation Approved."});
+          } else{
+              Data.toast({status:"error",message:"There was an error when try to approve the reservation."});
+
+          }
+        });
+        $scope.getItemDetails();
+        $scope.getItemReservations();
+        $scope.getItemPendingReservations();
+        $scope.getCalendarInfo();
+
+      }
+    });
+
+    
+   
+  };
+
+   $scope.checkOutReservation = function (index) {
+    console.log($scope.reservations); 
+    Data.post('getItemHardwareFlag', {
+      itemid: $scope.reservations[index].itemid,
+    }).then(function (results) {
+      if(results.hardware == 1)
+      {
+        document.getElementById('checkOutHardwareModal').style.display = "block";
+        $scope.checkOutHardwareModalID = index;
+        $scope.checkOutData.hasIDs = 1;
+        $scope.checkOutData.quantity = $scope.reservations[index].quantity;
+      }
+      else
+      {
+        $scope.checkOutReservationSuccess(index);
+      }
+
+      $scope.queryHardwareID = [];
+
+      $scope.hardwareID = [];
+      Data.post('getHardwareID', {
+          itemid: $scope.reservations[index].itemid,
+        }).then(function (results) {
+          // $scope.hardwareID = results;
+          for (key in results){
+            $scope.hardwareID.push({label: results[key]['HardwareID']});
+          }
+
+        });
+    });
+
+  }
+
+   $scope.checkOutReservationSuccess = function (index) {
+
+      var tickedItems = [];
+      angular.forEach( $scope.hardwareID, function( value, key ) {
+        if(value.ticked){
+          tickedItems.push(value.label);
+        }
+      });
+
+      if($scope.checkOutData.hasIDs == 1 && tickedItems.length != $scope.reservations[index].quantity)
+      {
+        Data.toast({status:"error",message:"Please select " + $scope.reservations[index].quantity + " total unique item IDs, one for each item you are checking out."});
+      }
+      else
+      {
+        Data.get('session').then(function (results) {
+          if (results.uid) {
+            Data.post('checkOutReservation', {
+              reservedid: $scope.reservations[index].reservedid,
+              itemid: $scope.reservations[index].itemid,
+              ckoutUserName: $scope.reservations[index].username,
+              ckoutUserEmail: $scope.reservations[index].useremail,
+              uid: results.uid,
+              quantity: parseInt($scope.reservations[index].quantity),
+              daterange: $scope.reservations[index].daterange,
+              uniqueItemIDs: tickedItems,
+            }).then(function (results) {
+              if(results["duplicate"]){
+                Data.toast({status:"error",message:"User must return all previously checkout items before checking out again."});
+              }
+              else if(results["dropReservation"] && results["addCheckedOut"] && results["substractVal"] && results["updateStatus"])
+              {
+                Data.toast({status:"success",message:"Reservation checked out."});
+              }
+              else
+              {
+                Data.toast({status:"error",message:"There was an error when trying to check out the reservation."});
+              }
+            });
+            $scope.checkOutHardwareUniqueIDs = "";
+            $scope.checkOutData.hasIDs = 0;
+            $scope.checkOutData.quantity = 0;
+            $scope.getItemDetails();
+            $scope.getItemReservations();
+            $scope.getItemPendingReservations();
+            $scope.getCalendarInfo();
+          }
+        });
+      }
+   }
+
+   $scope.checkOutHardwareButtonClick = function () {
+    $scope.checkOutReservationSuccess($scope.checkOutHardwareModalID);
+    document.getElementById('checkOutHardwareModal').style.display = "none";
+  };
+
+  $scope.checkOutHardwareButtonCancel = function () {
+    document.getElementById('checkOutHardwareModal').style.display = "none";
+    Data.toast({status:"info",message:"Check Out cancelled."});
+  };
+
+  $scope.updateReservations = function() {
+
+    let adminEmail;
+    let borrowerName;
+    let borrowerEmail;
+    var approved = 0; //if USC student then reservation is not approved yet
+    if($scope.type === 'Admin'){
+      adminEmail =  $scope.newRes.user;
+      borrowerEmail = $scope.newRes.resUserEmail;
+      borrowerName = $scope.newRes.resUserName;
+      approved = 1;
+    }
+    else{
+      adminEmail = $scope.email;
+      borrowerEmail = $scope.email;
+      borrowerName = $rootScope.name;
+
+    }
+
+    var dates = $('#newResDates').val();
+    var tempDates = dates.split(" ");
+
+
+    var dateStartParts = tempDates[0].split('/')
+    var startDateObj = new Date(dateStartParts[2],dateStartParts[0]-1,dateStartParts[1]);
+
+    let dateEndParts = tempDates[2].split('/');
+    let returnDateObj = new Date(dateEndParts[2], dateEndParts[0]-1, dateEndParts[1]);
 
     var resQuantity = filterInt($scope.newRes.quantity);
-
-
-    var email =  $scope.newRes.resUserEmail;
-
+    
 
     var todayDateObj = new Date();
     todayDateObj = new Date(todayDateObj.getFullYear(),todayDateObj
@@ -231,12 +403,12 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
     else if(returnDateObj < startDateObj){
        Data.toast({status:"error", message:"Reservation cannot begin more than 3 weeks from today"});
     }
-    else if($scope.newRes.user == null || $scope.newRes.user.length == 0){
+    else if(borrowerEmail == null || borrowerEmail.length == 0){
        Data.toast({status:"error", message:"Reservation requires associated user e-mail."});
     }
     else if(isNaN(resQuantity) || !$scope.checkAvailability(moment(startDateObj), moment(returnDateObj), resQuantity) || resQuantity <= 0){
        Data.toast({status:"error", message:"Please enter valid quantity for reservation."});
-    }else if (!validateEmail(email)){
+    }else if (!validateEmail(borrowerEmail)){
       Data.toast({status:"error", message: "Please enter a valid email"});
     }
     else{
@@ -244,11 +416,12 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
         if (results.uid) {
           Data.post('addReservation', {
             itemid: $routeParams.itemID,
-            user: $scope.newRes.user,
-            resUserName: $scope.newRes.resUserName,
-            resUserEmail: $scope.newRes.resUserEmail,
+            user: adminEmail,
+            resUserName: borrowerName,
+            resUserEmail: borrowerEmail,
             quantity: resQuantity,
-            dates: dates
+            dates: dates,
+            approved: approved
           }).then(function (results) {
             if(results.addRes)
             {
@@ -269,26 +442,20 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
           });
           $scope.getItemDetails();
           $scope.getItemReservations();
+          $scope.getItemPendingReservations();
           $scope.getCalendarInfo();
         }
       });
     }
   };
-
-
-
-
-  $scope.dropReservation = function(index) {
+$scope.dropPendingReservation = function(index) {
     Data.get('session').then(function (results) {
         if (results.uid) {
           Data.post('dropReservation', {
-            itemid: parseInt($routeParams.itemID),
-            user: $rootScope.uid,
-            quantity: parseInt($scope.reservations[index].quantity),
-            daterange: $scope.reservations[index].daterange,
-            borrowerName: $scope.reservations[index].username,
-            borrowerEmail: $scope.reservations[index].useremail
+            reservedid: $scope.pendingReservations[index].reservedid,
+            uid: results.uid
           }).then(function (results) {
+            // console.log(results);
             if(results["dropReservation"])
             {
               Data.toast({status:"success",message:"Reservation cancelled."});
@@ -301,6 +468,38 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
           $scope.getItemDetails();
           $scope.getItemReservations();
           $scope.getCalendarInfo();
+          $scope.getItemPendingReservations();
+
+        }
+      });
+  };
+
+
+
+  $scope.dropReservation = function(index) {
+    Data.get('session').then(function (results) {
+      
+        if (results.uid) {
+          Data.post('dropReservation', {
+            reservedid: $scope.reservations[index].reservedid,
+            uid: results.uid
+            
+          }).then(function (results) {
+            // console.log(results);
+            if(results["dropReservation"])
+            {
+              Data.toast({status:"success",message:"Reservation cancelled."});
+            }
+            else
+            {
+              Data.toast({status:"error",message:"There was an error when try to cancel the reservation."});
+            }
+          });
+          $scope.getItemDetails();
+          $scope.getItemReservations();
+          $scope.getCalendarInfo();
+          $scope.getItemPendingReservations();
+
         }
       });
   };
@@ -432,6 +631,8 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
 
   $scope.getItemDetails();
   $scope.getItemReservations();
+  $scope.getItemPendingReservations();
+
 
 
 
@@ -461,10 +662,14 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
   $scope.closeCalendarButtonClick = function () {
     document.getElementById('calendarModal').style.display = "none";
   };
+
   $scope.checkAvailability = function(start, end, quantity){
     $scope.getCalendarInfo();
 
     var startMoment = moment(start);
+    // console.log(start);
+    // console.log(startMoment);
+    // console.log(end);
 
     while(startMoment.isSameOrBefore(moment(end), 'day'))
     {
@@ -473,11 +678,15 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
       {
         if(overlappingRanges(startMoment, startMoment, moment($scope.events[event].start,"YYYY/MM/DD"), moment($scope.events[event].end,"YYYY/MM/DD")))
         {
+        // console.log(startMoment + "   " + $scope.events[event].start+ "   " + $scope.events[event].end);
+
+            // console.log($scope.events[event].quantity);
           sum += $scope.events[event].quantity;
         }
       }
       if(sum > $scope.quantityTotal)
       {
+        console.log("sum " + sum + " quantitytotal " +  $scope.quantityTotal);
         return false;
       }
       startMoment.add(1, 'day');
@@ -488,7 +697,9 @@ app.controller("itemCtrl", function($scope, $filter, $routeParams, $rootScope,$h
 
 //takes in 4 moment objects
 function overlappingRanges(lhsStart, lhsEnd, rhsStart, rhsEnd){
-  if(lhsEnd.isSameOrBefore(rhsStart, 'day') || rhsEnd.isSameOrBefore(lhsStart, 'day'))
+
+
+  if(lhsEnd.isSameOrAfter(rhsStart) && lhsEnd.isSameOrBefore(rhsEnd))
   {
     return true;
   }

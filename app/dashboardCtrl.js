@@ -29,7 +29,9 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     Data.get('session').then(function (results) {
       if (results.uid) {
         Data.post('getCheckedOut', {
-          uid: results.uid
+          uid: results.uid,
+          useremail: results.email,
+          type: results.type
         }).then(function (results) {
           $scope.data = results;
         });
@@ -42,7 +44,8 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     Data.get('session').then(function (results) {
       if (results.uid) {
         Data.post('getReserved', {
-          uid: results.uid
+          uid: results.uid,
+          useremail: results.email
         }).then(function (results) {
           $scope.reservations = results;
         });
@@ -51,14 +54,83 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     });
   };
 
-  $scope.checkIn = function (itemname, itemid, quantity, name, email) {
-	
+  $scope.getPendingReserved = function () {
+    Data.get('session').then(function (results) {
+      if (results.uid) {
+        Data.post('getPendingReserved', {
+        }).then(function (results) {
+          $scope.pendingReservations = results;
+        });
+      }
+    });
+  };
+
+  $scope.getUserPendingReserved = function () {
+    Data.get('session').then(function (results) {
+      if (results.uid) {
+        Data.post('getUserPendingReserved', {
+          useremail: results.email
+        }).then(function (results) {
+          console.log(results);
+          $scope.userPendingReservations = results;
+        });
+      }
+    });
+  };
+
+  $scope.updatePendingReservation = function(index) {
+    Data.get('session').then(function (results){
+      if(results.uid){
+        Data.post('updatePendingReservation', {
+          reservationid: $scope.pendingReservations[index].reservedid,
+          adminid: results.uid
+        }).then(function(results){
+          if(results){
+              Data.toast({status:"success",message:"Reservation Approved."});
+          } else{
+              Data.toast({status:"error",message:"There was an error when try to approve the reservation."});
+
+          }
+        });
+        $scope.getReserved();
+        $scope.getPendingReserved();
+      }
+    });
+  };
+
+  $scope.dropPendingReservation = function(index) {
+    Data.get('session').then(function (results) {
+        if (results.uid) {
+          Data.post('dropReservation', {
+            reservedid: $scope.pendingReservations[index].reservedid,
+            uid: results.uid
+          }).then(function (results) {
+            // console.log(results);
+            if(results["dropReservation"])
+            {
+              Data.toast({status:"success",message:"Reservation cancelled."});
+            }
+            else
+            {
+              Data.toast({status:"error",message:"There was an error when try to cancel the reservation."});
+            }
+          });
+          $scope.getReserved();
+          $scope.getPendingReserved();
+          $scope.getUserPendingReserved();
+
+
+        }
+      });
+  };
+
+  $scope.checkIn = function (checkoutid, itemname, itemid, quantity, name, email) {
 
     Data.post('getItemHardwareFlag', {
       itemid: itemid,
     }).then(function (results) {
       document.getElementById('checkInModal').style.display = "block";
-      $scope.checkInData = {checkOutQuantity: quantity, checkInConsumed: null, checkInQuantity: null, note: "", itemid: itemid, itemname: itemname, isHardware: results.hardware, HardwareUniqueIDs: "", borrowerName:name, borrowerEmail:email};
+      $scope.checkInData = {checkOutQuantity: quantity, checkInConsumed: null, checkInQuantity: null, note: "", checkoutid:checkoutid, itemid: itemid, itemname: itemname, isHardware: results.hardware, HardwareUniqueIDs: "", borrowerName:name, borrowerEmail:email};
 
     });
 
@@ -130,6 +202,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
               itemname: $scope.checkInData.itemname,
               uid: results.uid,
               useremail: results.email,
+              checkoutid: $scope.checkInData.checkoutid,
               checkInQuantity: $scope.checkInData.checkInQuantity,
               checkInConsumed: $scope.checkInData.checkInConsumed,
               borrowerName: $scope.checkInData.borrowerName,
@@ -137,6 +210,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
               hardwareNotes: tickedItems,
               note: $scope.checkInData.note,
             }).then(function (results) {
+              console.log(results);
               if( results["updateCheckOut"] && results["dropCheckOut"] && results["updateStatus"] )
               {
                 Data.toast({status:"success",message:"Item checked in."});
@@ -167,7 +241,8 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
       if (results.uid) {
         Data.post('dropReservation', {
           itemid: $scope.reservations[index].itemid,
-          user: results.uid,
+          uid: results.uid,
+          reservedid:$scope.reservations[index].reservedid,
           quantity: parseInt($scope.reservations[index].quantity),
           daterange: $scope.reservations[index].daterange,
           borrowerName: $scope.reservations[index].username,
@@ -185,6 +260,8 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
 
         });
         $scope.getReserved();
+        $scope.getUserPendingReserved();
+
       }
     });
   };
@@ -276,6 +353,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
         Data.get('session').then(function (results) {
           if (results.uid) {
             Data.post('checkOutReservation', {
+              reservedid: $scope.reservations[index].reservedid,
               itemid: $scope.reservations[index].itemid,
               ckoutUserName: $scope.reservations[index].username,
               ckoutUserEmail: $scope.reservations[index].useremail,
@@ -313,5 +391,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
 
   $scope.getCheckedOut();
   $scope.getReserved();
+   $scope.getPendingReserved();
+   $scope.getUserPendingReserved();
 
 });

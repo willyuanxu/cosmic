@@ -1026,13 +1026,15 @@ INSERT INTO `items_checkedout` VALUES(400, 101, 370, 8, '11/02/2018', 'Chris Gul
 --
 
 CREATE TABLE `items_reserved` (
+  `reservedid` int(11) NOT NULL AUTO_INCREMENT,
   `itemid` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
   `username` varchar(200) NOT NULL,
   `useremail` varchar(200) NOT NULL,
   `quantity` int(11) NOT NULL,
   `daterange` varchar(200) NOT NULL,
-  PRIMARY KEY (`itemid`,`username`,`useremail`,`quantity`,`daterange`),
+  `approved` tinyint(4),
+  PRIMARY KEY (`reservedid`),
   KEY `items_reserved_ibfk_2` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1040,14 +1042,13 @@ CREATE TABLE `items_reserved` (
 -- Dumping data for table `items_reserved`
 --
 
-INSERT INTO `items_reserved` VALUES(55, 391, 'Nigrah Bamb', 'bamb@usc.edu', 4, '10/24/2018 - 10/29/2018');
-INSERT INTO `items_reserved` VALUES(64, 391, 'Nigrah Bamb', 'bamb@usc.edu', 1, '10/24/2018 - 10/29/2018');
-INSERT INTO `items_reserved` VALUES(87, 391, 'Nigrah Bamb', 'bamb@usc.edu', 8, '10/24/2018 - 10/29/2018');
-INSERT INTO `items_reserved` VALUES(142, 391, 'Nigrah Bamb', 'bamb@usc.edu', 50, '10/24/2018 - 10/29/2018');
-INSERT INTO `items_reserved` VALUES(173, 391, 'Nigrah Bamb', 'bamb@usc.edu', 30, '10/24/2018 - 10/29/2018');
-INSERT INTO `items_reserved` VALUES(181, 391, 'Nigrah Bamb', 'bamb@usc.edu', 30, '10/24/2018 - 10/29/2018');
-INSERT INTO `items_reserved` VALUES(367, 391, 'Nigrah Bamb', 'bamb@usc.edu', 1, '10/24/2018 - 10/29/2018');
-
+INSERT INTO `items_reserved` VALUES(1,55, 391, 'Nigrah Bamb', 'bamb@usc.edu', 4, '10/24/2018 - 10/29/2018',1);
+INSERT INTO `items_reserved` VALUES(2,64, 391, 'Nigrah Bamb', 'bamb@usc.edu', 1, '10/24/2018 - 10/29/2018',1);
+INSERT INTO `items_reserved` VALUES(3,87, 391, 'Nigrah Bamb', 'bamb@usc.edu', 8, '10/24/2018 - 10/29/2018',1);
+INSERT INTO `items_reserved` VALUES(4,142, 391, 'Nigrah Bamb', 'bamb@usc.edu', 50, '10/24/2018 - 10/29/2018',1);
+INSERT INTO `items_reserved` VALUES(5,173, 391, 'Nigrah Bamb', 'bamb@usc.edu', 30, '10/24/2018 - 10/29/2018',1);
+INSERT INTO `items_reserved` VALUES(6,181, 391, 'Nigrah Bamb', 'bamb@usc.edu', 30, '10/24/2018 - 10/29/2018',1);
+INSERT INTO `items_reserved` VALUES(7,367, 391, 'Nigrah Bamb', 'bamb@usc.edu', 1, '10/24/2018 - 10/29/2018',1);
 -- --------------------------------------------------------
 
 --
