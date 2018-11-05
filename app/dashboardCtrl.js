@@ -20,6 +20,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
 
   $scope.logout = function () {
       Data.get('logout').then(function (results) {
+      	 sessionStorage.setItem('login', false);
           Data.toast(results);
           $location.path('login');
       });

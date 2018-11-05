@@ -12,18 +12,21 @@ app.controller('authCtrl', function ($scope, $rootScope, $routeParams, $location
     {
         Data.get('session').then(function (results) {
             if (results.uid) {
+            	sessionStorage.setItem('login', true);
                 $location.path('dashboard');
             }
         });
     }
 
     $scope.doLogin = function (customer) {
-
+		
         Data.post('login', {
             customer: customer
         }).then(function (results) {
+
             Data.toast(results);
             if (results.status == "success") {
+				sessionStorage.setItem('login', true);
                 $location.path('inventory');
             }
         });

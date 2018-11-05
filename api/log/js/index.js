@@ -1,18 +1,26 @@
 
+let loggedin = sessionStorage.getItem('login');
+
+if (loggedin == 'false' || loggedin == null){
+	window.location.replace(window.location.origin);
+}
+
 var app = angular.module("myApp", ["ngTable"]);
 
-app.controller('demoController', ['$scope', '$http','NgTableParams', function ($scope, $http, NgTableParams) {
- 
+app.controller('demoController', ['$scope', '$http', 'NgTableParams', function ($scope, $http, NgTableParams) {
+
+
  $scope.getCheckedOut = function () {
           console.log(results);
           $location.path('checkedout');
   };
+
   // http get request to read CSV file content
   $http.get("log_data.txt")
     .then(
       function(response) {
-
-        var allText = response.data;
+		if (loggedin == 'true'){
+			var allText = response.data;
         var allTextLines = allText.split(/\r\n|\n/);
         var headers = allTextLines[0].split(',');
         var lines = [];
@@ -41,6 +49,8 @@ app.controller('demoController', ['$scope', '$http','NgTableParams', function ($
         }
         $scope.data = lines;
         $scope.tableParams = new NgTableParams({}, {dataset: $scope.data});
+		}
+        
     },
       function(response) {
       alert('Could not load log_data.txt!');
@@ -51,6 +61,7 @@ app.controller('demoController', ['$scope', '$http','NgTableParams', function ($
     );
 
 }]);
+
 
 angular.module('myApp').run(['$templateCache', function ($templateCache) {
   $templateCache.put('ng-table/filters/text.html', '<input type="text" ng-model="params.filter()[name]" ng-if="filter==\'text\'" placeholder="Search..." class="input-filter form-control"/>');

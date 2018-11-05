@@ -68,6 +68,7 @@ app.config(['$routeProvider',
                 templateUrl: 'partials/checkoutLog.html',
                 controller: 'checkoutLogCtrl'
             })
+
             .otherwise({
                 redirectTo: '/login'
             });
