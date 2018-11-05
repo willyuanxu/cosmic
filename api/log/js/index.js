@@ -2,7 +2,12 @@
 let loggedin = sessionStorage.getItem('login');
 
 if (loggedin == 'false' || loggedin == null){
-	window.location.replace(window.location.origin);
+	if (window.location.host == "eccla.org"){
+		window.location.pathname = "/cosmic";
+	} else {
+		window.location.replace(window.location.origin);
+	}
+	
 }
 
 var app = angular.module("myApp", ["ngTable"]);
