@@ -125,6 +125,17 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
       });
   };
 
+  $scope.modifyItemCheckedOut = function(itemCheckoutId) {
+	document.getElementById('modifyCheckoutModal').style.display = "block";
+	$scope.modifyCheckoutData = {checkoutid: itemCheckoutId};
+
+  }
+
+   $scope.modifyButtonCancel = function () {
+    document.getElementById('modifyCheckoutModal').style.display = "none";
+    Data.toast({status:"info",message:"Modification cancelled."});
+  };
+
   $scope.checkIn = function (checkoutid, itemname, itemid, quantity, name, email) {
 
     Data.post('getItemHardwareFlag', {
@@ -136,7 +147,6 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     });
 
     $scope.queryHardwareID = [];
-
 
 
 
@@ -152,6 +162,8 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
       });
 
 };
+
+
 
     
 

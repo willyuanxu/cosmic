@@ -120,6 +120,7 @@
             <th class="tags">Quantity</th>
             <th class="return_date"> Return Date </th>
             <th class="checkIn">Check In</th>
+            <th class="modify">Modify</th>
           </tr>
         </tbody>
         <tbody>
@@ -131,6 +132,7 @@
             <td>{{item.quantity}}</td>
             <td> {{item.return_date}} </td>
             <td><button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="checkIn(item.checkoutid,item.name,item.itemid,item.quantity, item.checkout_user, item.checkout_useremail)">Check In</button></td>
+            <td><button type="submit" ng-click="modifyItemCheckedOut(item.checkoutid)" class="width-35 btn btn-sm btn-primary">Modify</button></td>
           </tr>
         </tbody>
       </table>
@@ -248,6 +250,39 @@
       </div>
     </div>
     <!-- end Check Out Hardware Modal -->
+
+
+        <!-- Modify Checkout Modal -->
+    <div id="modifyCheckoutModal" class="modal">
+      <div class="modal-content">
+        <h4>Modify Expected Return Date</h4>
+        <hr />
+        <form>
+          <div class="form-group">
+            <label for="expectedReturnDate">New Expected Return Date</label>
+            <input type="text" class="form-control" name="daterange" id="checkoutReturnDate" ng-model="modifyCheckoutData.returnDate" value="01/01/2015 - 01/31/2015" />
+          </div>
+          
+
+          <button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="modifyButtonClick()">Check In</button>
+          <button type="submit" class="width-35 btn btn-sm btn-primary" ng-click="modifyButtonCancel()">Cancel</button>
+        </form>
+      </div>
+    </div>
+    <!-- End Modify Checkout Modal -->
+	<script type="text/javascript">
+      $(function() {
+          $('input[name="daterange"]').daterangepicker(
+            {
+              "timePicker": false,
+              singleDatePicker: true,
+              minDate: moment()
+            })
+      });
+</script>
+     
   </div>
 
 </div>
+
+
