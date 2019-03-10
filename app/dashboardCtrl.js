@@ -125,16 +125,31 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
       });
   };
 
-  $scope.modifyItemCheckedOut = function(itemCheckoutId) {
+  $scope.modifyItemCheckedOut = function(itemCheckoutId, return_date) {
 	document.getElementById('modifyCheckoutModal').style.display = "block";
-	$scope.modifyCheckoutData = {checkoutid: itemCheckoutId};
+	$scope.modifyCheckoutData = {
+		checkoutid: itemCheckoutId,
+		oldReturnDate: return_date
+	};
 
-  }
+  };
 
    $scope.modifyButtonCancel = function () {
     document.getElementById('modifyCheckoutModal').style.display = "none";
+    $('#checkoutReturnDate').data('daterangepicker').setStartDate(moment());
     Data.toast({status:"info",message:"Modification cancelled."});
   };
+
+    $scope.modifyButtonClick = function() {
+	document.getElementById('modifyCheckoutModal').style.display = "none";
+	var newReturnDate = $('#checkoutReturnDate').val();
+	if (newReturnDate == $scope.modifyCheckoutData.oldReturnDate) {
+		Data.toast({status:"error",message: "Expected Return Date has not changed"});
+	}
+	$('#checkoutReturnDate').data('daterangepicker').setStartDate(moment());
+
+ };
+
 
   $scope.checkIn = function (checkoutid, itemname, itemid, quantity, name, email) {
 
@@ -164,7 +179,7 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
 };
 
 
-
+ 
     
 
 
