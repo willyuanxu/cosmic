@@ -77,7 +77,7 @@ function store_data($borrowername, $borroweremail, $uid, $itemid, $quantity, $ac
       $expectedreturn = "N/A";
       $daterange = "N/A";
 
-      if ($action == "Check Out" || $action == "Reservation Check Out") {
+      if ($action == "Check Out" || $action == "Reservation Check Out" || $action == "Updated Return Date") {
         $expectedreturn = $CRInput;
       } else if ($action == "Reserved" || $action == "Reservation Request" || $action == "Reservation Approved") {
         $daterange = $CRInput;

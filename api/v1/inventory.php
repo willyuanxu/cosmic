@@ -205,17 +205,21 @@ $app->post('/getCheckedOut', function() use ($app) {
 });
 
 /* Update return date */
-$app->post('/updateReturnDate', function() use ($app) {
+$app->post('/updateCheckedoutReturnDate', function() use ($app) {
+    
     $r = json_decode($app->request->getBody());
-    $itemid = $r->itemid;
-    $returnDate = $r->returnDate;
+    $checkoutid = $r->checkoutid;
+    $newReturnDate = $r->newReturnDate;
     $db = new DbHandler();
-    // $sql = "SELECT A.daterange, "
-    // $sql = "UPDATE `items_reserved` SET `name`='$name',`desc`='$desc',`tag1`=$tag1,`tag2`=$tag2,`tag3`=$tag3,`tag4`=$tag4,`tag5`=$tag5,`status`='$status',`quantityAvailable`=$quantityAvailable,`quantityTotal`=$quantityTotal,`reorderThreshold`=$reorderThreshold,`locationid`=".$results["locationid"]." WHERE `itemid` = $itemid";
+    $sql = "UPDATE `items_checkedout` SET `return_date`='$newReturnDate' WHERE `checkoutid`=$checkoutid";
+    $results = $db->update($sql);
 
-
-
-}
+    $sql2 = "SELECT * FROM `items_checkedout` WHERE `checkoutid`=$checkoutid ";
+    $rInfo = $db->getOneRecord($sql2);
+    store_data($rInfo["checkout_user"], $rInfo["checkout_useremail"], $rInfo["uid"], $rInfo["itemid"], $rInfo["quantity"], "Updated Return Date", "",$rInfo["return_date"]);
+    echoResponse(200, $results);
+   
+});
 
 /* Update an item's details */
 $app->post('/updateItemDetails', function() use ($app) {

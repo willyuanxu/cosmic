@@ -79,6 +79,27 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     });
   };
 
+  $scope.updateCheckedoutReturnDate = function() {
+    Data.get('session').then(function (results){
+      if(results.uid) {
+        Data.post('updateCheckedoutReturnDate', {
+          checkoutid: $scope.modifyCheckoutData.checkoutid,
+          newReturnDate: $scope.modifyCheckoutData.newReturnDate
+        }).then( (results) =>{
+          if(results){
+            $scope.getCheckedOut();
+            Data.toast({status:"success",message:"Updated return date."});
+          }
+          else{
+            Data.toast({status:"error",message:"There was an error when trying to update the return date."});
+
+          }
+
+        });
+      }
+    });
+  };
+
   $scope.updatePendingReservation = function(index) {
     Data.get('session').then(function (results){
       if(results.uid){
@@ -126,11 +147,11 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
   };
 
   $scope.modifyItemCheckedOut = function(itemCheckoutId, return_date) {
-	document.getElementById('modifyCheckoutModal').style.display = "block";
-	$scope.modifyCheckoutData = {
-		checkoutid: itemCheckoutId,
-		oldReturnDate: return_date
-	};
+    document.getElementById('modifyCheckoutModal').style.display = "block";
+    $scope.modifyCheckoutData = {
+      checkoutid: itemCheckoutId,
+      oldReturnDate: return_date
+    };
 
   };
 
@@ -140,15 +161,19 @@ app.controller("dashboardCtrl", function($scope, $filter, $http, Data, $location
     Data.toast({status:"info",message:"Modification cancelled."});
   };
 
-    $scope.modifyButtonClick = function() {
-	document.getElementById('modifyCheckoutModal').style.display = "none";
-	var newReturnDate = $('#checkoutReturnDate').val();
-	if (newReturnDate == $scope.modifyCheckoutData.oldReturnDate) {
-		Data.toast({status:"error",message: "Expected Return Date has not changed"});
-	}
-	$('#checkoutReturnDate').data('daterangepicker').setStartDate(moment());
-
- };
+  $scope.modifyButtonClick = function() {
+    document.getElementById('modifyCheckoutModal').style.display = "none";
+    var newReturnDate = $('#checkoutReturnDate').val();
+    if (newReturnDate == $scope.modifyCheckoutData.oldReturnDate) {
+      Data.toast({status:"error",message: "Expected Return Date has not changed"});
+    }
+    else{
+      $('#checkoutReturnDate').data('daterangepicker').setStartDate(moment());
+      $scope.modifyCheckoutData.newReturnDate = newReturnDate;
+      $scope.updateCheckedoutReturnDate();
+    }
+    
+  };
 
 
   $scope.checkIn = function (checkoutid, itemname, itemid, quantity, name, email) {
