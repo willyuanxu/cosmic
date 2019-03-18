@@ -204,8 +204,18 @@ $app->post('/getCheckedOut', function() use ($app) {
     echoResponse(200, $result);
 });
 
+/* Update return date */
+$app->post('/updateReturnDate', function() use ($app) {
+    $r = json_decode($app->request->getBody());
+    $itemid = $r->itemid;
+    $returnDate = $r->returnDate;
+    $db = new DbHandler();
+    // $sql = "SELECT A.daterange, "
+    // $sql = "UPDATE `items_reserved` SET `name`='$name',`desc`='$desc',`tag1`=$tag1,`tag2`=$tag2,`tag3`=$tag3,`tag4`=$tag4,`tag5`=$tag5,`status`='$status',`quantityAvailable`=$quantityAvailable,`quantityTotal`=$quantityTotal,`reorderThreshold`=$reorderThreshold,`locationid`=".$results["locationid"]." WHERE `itemid` = $itemid";
 
 
+
+}
 
 /* Update an item's details */
 $app->post('/updateItemDetails', function() use ($app) {
